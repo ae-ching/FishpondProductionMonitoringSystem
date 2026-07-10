@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 from .models import Fishpond, Harvest, FishType, FishpondFishType
+from . import ml_loader
+
+
+class MLLoaderTests(TestCase):
+    def test_model_files_resolve_to_existing_artifacts(self):
+        exists, missing = ml_loader.check_model_files_exist()
+        self.assertTrue(exists, f"Expected model files to be found. Missing: {missing}")
 
 
 class PaginationLinkTests(TestCase):

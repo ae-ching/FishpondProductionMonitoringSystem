@@ -36,7 +36,30 @@ _ML_MODELS = {
 # ==============================================================================
 # Model File Paths
 # ==============================================================================
-ML_MODELS_DIR = os.path.join(settings.BASE_DIR.parent, 'ml-training', 'models')
+def get_ml_models_dir():
+    """Resolve the ML models directory from both old and new locations."""
+    candidates = []
+
+    base_dir = getattr(settings, 'BASE_DIR', None)
+    if base_dir:
+        candidates.append(os.path.join(base_dir, 'ml-training', 'models'))
+        candidates.append(os.path.join(base_dir.parent, 'ml-training', 'models'))
+        candidates.append(os.path.join(base_dir, 'ml-training', 'models'))
+
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    candidates.extend([
+        os.path.join(project_root, 'ml-training', 'models'),
+        os.path.join(project_root, '..', 'ml-training', 'models'),
+    ])
+
+    for candidate in candidates:
+        if os.path.isdir(candidate):
+            return os.path.abspath(candidate)
+
+    return os.path.abspath(os.path.join(project_root, 'ml-training', 'models'))
+
+
+ML_MODELS_DIR = get_ml_models_dir()
 MODEL_FILES = {
     'model': os.path.join(ML_MODELS_DIR, 'random_forest_model.pkl'),
     'fish_encoder': os.path.join(ML_MODELS_DIR, 'fish_encoder.pkl'),

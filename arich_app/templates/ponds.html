@@ -1,0 +1,939 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="space-y-8 p-6">
+
+  <!-- PAGE HEADER -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Fishponds</h1>
+      <p class="text-slate-500 mt-1">Manage and monitor all your fishponds</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="px-5 py-2.5 border border-slate-200 rounded-xl flex items-center gap-2 bg-white text-slate-600 hover:bg-slate-50 transition-all shadow-sm" onclick="location.reload()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+        Refresh
+      </button>
+      <button onclick="openModal()" class="px-5 py-2.5 bg-indigo-400 text-white rounded-xl hover:bg-indigo-500 transition-all shadow-sm font-medium text-sm flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Fishpond
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS CARDS -->
+  <div class="grid gap-5 md:grid-cols-4">
+
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm font-medium text-slate-500">Total Ponds</p>
+        <div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-rose-400"><path d="M17.5 19c0-1.7-1.3-3-3-3h-5c-1.7 0-3 1.3-3 3"/><path d="M12 2v13"/><path d="M12 2l3.5 3.5"/><path d="M12 2l-3.5 3.5"/><path d="M8 16c-2.2 0-4 1.8-4 4"/><path d="M16 16c2.2 0 4 1.8 4 4"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold text-slate-800">{{ total_ponds }}</div>
+    </div>
+
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm font-medium text-slate-500">Active</p>
+        <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold text-emerald-500">{{ active_count }}</div>
+    </div>
+
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm font-medium text-slate-500">Harvesting</p>
+        <div class="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-400"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold text-sky-400">{{ harvesting_count }}</div>
+    </div>
+
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-sm font-medium text-slate-500">Maintenance</p>
+        <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-400"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold text-amber-500">{{ maintenance_count }}</div>
+    </div>
+
+  </div>
+
+  <!-- SEARCH HEADER -->
+  <div class="border border-slate-200 p-6 rounded-2xl bg-white shadow-sm">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="font-semibold text-slate-800">All Fishponds</h3>
+        <p class="text-slate-400 text-sm mt-1">A list of all fishponds in your farm</p>
+      </div>
+      <form method="GET" class="flex items-center gap-3">
+        <div class="relative" style="width: 320px;">
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </span>
+          <input
+              type="text"
+              name="search"
+              value="{{ search }}"
+              placeholder="Search ponds..."
+              class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all bg-slate-50">
+        </div>
+
+        <select name="status" class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all bg-slate-50 cursor-pointer">
+          <option value="">All Status</option>
+          <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
+          <option value="maintenance" {% if status == 'maintenance' %}selected{% endif %}>Maintenance</option>
+          <option value="empty" {% if status == 'empty' %}selected{% endif %}>Empty</option>
+        </select>
+
+        <button type="submit" class="px-6 py-2.5 bg-indigo-400 text-white rounded-xl hover:bg-indigo-500 transition-all shadow-sm font-medium text-sm">
+          Filter
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden">
+    <div style="overflow-x: auto;">
+      <table class="w-full">
+        <thead>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Pond ID</th>
+            <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Name</th>
+            <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Fish Type</th>
+            <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Size (m²)</th>
+            <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Location</th>
+            <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Status</th>
+            <th class="text-right text-sm font-medium text-slate-500" style="padding: 1rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="pondTable">
+
+          {% for pond in ponds %}
+          <tr style="border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+            <td class="text-slate-800 font-medium" style="padding: 1rem;">P{{ pond.id }}</td>
+            <td class="text-slate-800 font-medium" style="padding: 1rem;">{{ pond.name }}</td>
+            <td class="text-slate-600" style="padding: 1rem;">
+              {% if pond.fish_types.all %}
+                {% for ft in pond.fish_types.all %}
+                  {{ ft.fish_type.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td class="text-slate-600" style="padding: 1rem;">{{ pond.size|default:"-" }}</td>
+            <td class="text-slate-600" style="padding: 1rem;">{{ pond.location|default:"-" }}</td>
+            <td style="padding: 1rem;">
+              <span class="inline-block px-3 py-1 rounded-lg text-xs font-medium
+                {% if pond.status == 'active' %} bg-emerald-50 text-emerald-500
+                {% elif pond.status == 'harvesting' %} bg-sky-50 text-sky-500
+                {% elif pond.status == 'maintenance' %} bg-amber-50 text-amber-500
+                {% else %} bg-slate-50 text-slate-500 {% endif %}">
+                {{ pond.status }}
+              </span>
+            </td>
+            <td class="action-buttons" style="padding: 1rem;">
+              <button type="button" class="btn-icon" title="Edit" data-edit-url="{% url 'edit_fishpond' pond.pk %}" onclick="openEditFishpondModal(this.dataset.editUrl)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+              </button>
+              <button type="button" class="btn-icon delete" title="Delete" data-delete-url="{% url 'delete_fishpond' pond.pk %}" onclick="openDeleteFishpondModal(this.dataset.deleteUrl)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-slate-400 text-center" style="padding: 2rem;">
+              No fishponds yet. Add one to get started!
+            </td>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex items-center gap-2" style="padding: 1rem; border-top: 1px solid #e2e8f0;">
+      {% if ponds.has_previous %}
+        <a href="?page={{ ponds.previous_page_number }}&search={{ search|default:''|urlencode }}&status={{ status|default:''|urlencode }}" class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-sm">Previous</a>
+      {% endif %}
+      <span class="text-sm text-slate-400">Page {{ ponds.number }} of {{ ponds.paginator.num_pages }}</span>
+      {% if ponds.has_next %}
+        <a href="?page={{ ponds.next_page_number }}&search={{ search|default:''|urlencode }}&status={{ status|default:''|urlencode }}" class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-sm">Next</a>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL FOR ADD FISHPOND -->
+<div id="modalOverlay" class="modal-overlay">
+
+  <div class="modal-content">
+
+    <h2 class="modal-title">Add Fishpond</h2>
+
+    <form method="POST" action="{% url 'create_fishpond' %}">
+      {% csrf_token %}
+      
+      <!-- Display Form Non-Field Errors -->
+      {% if form.non_field_errors %}
+        <div class="form-errors">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Pond Name -->
+      <div class="form-group">
+        <label class="form-label">
+          {{ form.name.label }} *
+        </label>
+        {{ form.name }}
+        {% if form.name.errors %}
+          <span class="form-error">
+            {{ form.name.errors.0 }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Size -->
+      <div class="form-group">
+        <label class="form-label">
+          {{ form.size.label }}
+        </label>
+        {{ form.size }}
+        {% if form.size.errors %}
+          <span class="form-error">
+            {{ form.size.errors.0 }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Location -->
+      <div class="form-group">
+        <label class="form-label">
+          {{ form.location.label }}
+        </label>
+        {{ form.location }}
+      </div>
+
+      <!-- Fish Types -->
+      <div class="form-group">
+        <label class="form-label">
+          Fish Types *
+        </label>
+        <div id="fishTypeInputs" class="checkbox-group">
+          <div class="fish-type-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <input type="text" name="fish_type_names[]" class="form-control" placeholder="e.g., Tilapia">
+            <button type="button" class="btn-cancel" onclick="removeFishTypeRow(this)">Remove</button>
+          </div>
+        </div>
+        <button type="button" onclick="addFishTypeRow()" class="btn-cancel" style="margin-top: 0.5rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Fish Type
+        </button>
+        <span class="form-error" id="fishTypeError"></span>
+      </div>
+
+      <!-- Status -->
+      <div class="form-group">
+        <label class="form-label">
+          {{ form.status.label }} *
+        </label>
+        {{ form.status }}
+        {% if form.status.errors %}
+          <span class="form-error">
+            {{ form.status.errors.0 }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label class="form-label">
+          {{ form.notes.label }}
+        </label>
+        {{ form.notes }}
+      </div>
+
+      <!-- Buttons -->
+      <div class="modal-buttons">
+        <button type="button" onclick="closeModal()" class="btn-cancel">
+          Cancel
+        </button>
+        <button type="submit" class="btn-submit">
+          Save Fishpond
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<div id="editFishpondModalOverlay" class="modal-overlay">
+  <div class="modal-content" id="editFishpondModalContent"></div>
+</div>
+
+<div id="deleteFishpondModalOverlay" class="modal-overlay">
+  <div class="modal-content" id="deleteFishpondModalContent"></div>
+</div>
+
+<script>
+
+// AUTO SEARCH
+const searchForm = document.querySelector(".search-input-wrapper");
+const searchField = searchForm.querySelector("input[name='search']");
+
+let typingTimer;
+
+searchField.addEventListener("input", function () {
+    clearTimeout(typingTimer);
+
+    typingTimer = setTimeout(function () {
+        searchForm.submit();
+    }, 400);
+});
+
+// MODAL FUNCTIONS
+function openModal() {
+  document.getElementById("modalOverlay").style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  document.getElementById("modalOverlay").style.display = "none";
+  document.body.style.overflow = "";
+}
+
+function addFishTypeRow() {
+  const container = document.getElementById("fishTypeInputs");
+  const row = document.createElement("div");
+  row.className = "fish-type-row";
+  row.style.display = "flex";
+  row.style.gap = "0.5rem";
+  row.style.marginBottom = "0.5rem";
+  row.innerHTML = '<input type="text" name="fish_type_names[]" class="form-control" placeholder="e.g., Tilapia"><button type="button" class="btn-cancel" onclick="removeFishTypeRow(this)">Remove</button>';
+  container.appendChild(row);
+}
+
+function removeFishTypeRow(button) {
+  const row = button.closest('.fish-type-row');
+  const container = document.getElementById("fishTypeInputs");
+  if (container.querySelectorAll('.fish-type-row').length > 1) {
+    row.remove();
+  }
+}
+
+const fishpondForm = document.querySelector('form[action="{% url "create_fishpond" %}"]');
+if (fishpondForm) {
+  fishpondForm.addEventListener("submit", function (e) {
+    const rows = document.querySelectorAll('#fishTypeInputs .fish-type-row');
+    const hasValue = Array.from(rows).some(row => {
+      const input = row.querySelector('input[name="fish_type_names[]"]');
+      return input && input.value.trim();
+    });
+
+    if (!hasValue) {
+      e.preventDefault();
+      document.getElementById("fishTypeError").textContent = "Please enter at least one fish type";
+    } else {
+      document.getElementById("fishTypeError").textContent = "";
+    }
+  });
+}
+
+function openEditFishpondModal(url) {
+  fetch(url, {
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.text())
+  .then(html => {
+    document.getElementById("editFishpondModalContent").innerHTML = html;
+    document.getElementById("editFishpondModalOverlay").style.display = "flex";
+    document.body.style.overflow = "hidden";
+  })
+  .catch(() => {
+    window.location.href = url;
+  });
+}
+
+function closeEditFishpondModal() {
+  document.getElementById("editFishpondModalOverlay").style.display = "none";
+  document.body.style.overflow = "";
+  document.getElementById("editFishpondModalContent").innerHTML = "";
+}
+
+function openDeleteFishpondModal(url) {
+  fetch(url, {
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.text())
+  .then(html => {
+    document.getElementById("deleteFishpondModalContent").innerHTML = html;
+    document.getElementById("deleteFishpondModalOverlay").style.display = "flex";
+    document.body.style.overflow = "hidden";
+  })
+  .catch(() => {
+    window.location.href = url;
+  });
+}
+
+function closeDeleteFishpondModal() {
+  document.getElementById("deleteFishpondModalOverlay").style.display = "none";
+  document.body.style.overflow = "";
+  document.getElementById("deleteFishpondModalContent").innerHTML = "";
+}
+
+// CLICK OUTSIDE TO CLOSE
+document.getElementById("modalOverlay").addEventListener("click", function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.getElementById("editFishpondModalOverlay").addEventListener("click", function(e) {
+  if (e.target === this) closeEditFishpondModal();
+});
+
+document.getElementById("deleteFishpondModalOverlay").addEventListener("click", function(e) {
+  if (e.target === this) closeDeleteFishpondModal();
+});
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+}
+
+.space-y-8 > * + * {
+  margin-top: 2rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.text-slate-800 {
+  color: #1e293b;
+}
+
+.text-slate-500 {
+  color: #64748b;
+}
+
+.text-slate-400 {
+  color: #94a3b8;
+}
+
+.text-slate-600 {
+  color: #475569;
+}
+
+.text-slate-700 {
+  color: #334155;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.border {
+  border: 1px solid #e2e8f0;
+}
+
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+}
+
+.hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.transition-shadow {
+  transition: box-shadow 0.2s ease;
+}
+
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+.hover\:bg-slate-50:hover {
+  background-color: #f8fafc;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.py-2\.5 {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.p-5 {
+  padding: 1.25rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.grid {
+  display: grid;
+}
+
+.gap-5 {
+  gap: 1.25rem;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.md\:grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.w-9 {
+  width: 2.25rem;
+}
+
+.h-9 {
+  height: 2.25rem;
+}
+
+.bg-rose-50 {
+  background-color: #fff1f2;
+}
+
+.text-rose-400 {
+  color: #fb7185;
+}
+
+.bg-emerald-50 {
+  background-color: #ecfdf5;
+}
+
+.text-emerald-400 {
+  color: #34d399;
+}
+
+.text-emerald-500 {
+  color: #10b981;
+}
+
+.bg-sky-50 {
+  background-color: #f0f9ff;
+}
+
+.text-sky-400 {
+  color: #38bdf8;
+}
+
+.text-sky-500 {
+  color: #0ea5e9;
+}
+
+.bg-amber-50 {
+  background-color: #fffbeb;
+}
+
+.text-amber-400 {
+  color: #fbbf24;
+}
+
+.text-amber-500 {
+  color: #f59e0b;
+}
+
+.bg-slate-50 {
+  background-color: #f8fafc;
+}
+
+.bg-indigo-400 {
+  background-color: #818cf8;
+}
+
+.hover\:bg-indigo-500:hover {
+  background-color: #6366f1;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.py-1\.5 {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+
+.pl-10 {
+  padding-left: 2.5rem;
+}
+
+.pr-4 {
+  padding-right: 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.left-3 {
+  left: 0.75rem;
+}
+
+.top-1\/2 {
+  top: 50%;
+}
+
+.transform {
+  transform: translate(var(--tw-transform));
+}
+
+.-translate-y-1\/2 {
+  transform: translateY(-50%);
+}
+
+.focus\:outline-none:focus {
+  outline: none;
+}
+
+.focus\:ring-2:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:ring-indigo-100:focus {
+  --tw-ring-color: #e0e7ff;
+}
+
+.focus\:border-indigo-300:focus {
+  border-color: #a5b4fc;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* Action Buttons */
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #94a3b8;
+  transition: all 0.2s;
+  border-radius: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  color: #64748b;
+  background-color: #f1f5f9;
+}
+
+.btn-icon.delete:hover {
+  color: #ef4444;
+  background-color: #fef2f2;
+}
+
+/* Modal Styling */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 32rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 0.25rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 3px rgba(165, 180, 252, 0.15);
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.checkbox-group {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  background-color: #ffffff;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.checkbox-item:last-child {
+  margin-bottom: 0;
+}
+
+.checkbox-item input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.checkbox-item label {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.form-error {
+  color: #ef4444;
+  font-size: 0.75rem;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.form-errors {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #ef4444;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.form-errors p {
+  margin: 0;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.btn-submit {
+  background-color: #818cf8;
+  color: white;
+  border: none;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.btn-submit:hover {
+  background-color: #6366f1;
+}
+</style>
+
+{% endblock %}

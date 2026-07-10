@@ -1,0 +1,353 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Header Section -->
+<div class="section-head">
+    <div>
+        <h2>Dashboard</h2>
+        <p class="subtitle">Control center for harvest performance, pond status, and predictions.</p>
+    </div>
+    <button class="button button-primary" onclick="location.reload()">Refresh Overview</button>
+</div>
+
+<!-- KPI Cards Section -->
+<div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+    
+    <!-- Total Harvest Card -->
+    <div class="card" style="position: relative; overflow: hidden;">
+        <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <p class="subtitle" style="margin: 0;">Total Harvest</p>
+            <div style="display: flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; background-color: rgba(var(--primary-rgb), 0.1);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.5rem;">
+            <h3 style="margin: 0; font-size: 1.875rem; font-weight: bold;">{{ total_harvest|floatformat:0|default:'0' }}</h3>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">kg</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            <span style="display: flex; align-items: center; font-size: 0.875rem; color: rgb(22, 163, 74);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                    <polyline points="23 6 13.46 15.54 8 10 1 17"></polyline><polyline points="23 6 23 16 13 16"></polyline>
+                </svg>
+                +12.5%
+            </span>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">vs last month</span>
+        </div>
+    </div>
+
+    <!-- Total Fishponds Card -->
+    <div class="card" style="position: relative; overflow: hidden;">
+        <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <p class="subtitle" style="margin: 0;">Total Fishponds</p>
+            <div style="display: flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; background-color: rgba(var(--primary-rgb), 0.1);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                </svg>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.5rem;">
+            <h3 style="margin: 0; font-size: 1.875rem; font-weight: bold;">{{ total_ponds }}</h3>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">ponds</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            <span style="display: flex; align-items: center; font-size: 0.875rem; color: rgb(22, 163, 74);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                    <polyline points="23 6 13.46 15.54 8 10 1 17"></polyline><polyline points="23 6 23 16 13 16"></polyline>
+                </svg>
+                +{{ active_ponds }}
+            </span>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">active ponds</span>
+        </div>
+    </div>
+
+    <!-- Most Recent Harvest Card -->
+    <div class="card" style="position: relative; overflow: hidden;">
+        <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <p class="subtitle" style="margin: 0;">Most Recent Harvest</p>
+            <div style="display: flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; background-color: rgba(var(--primary-rgb), 0.1);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);">
+                    <path d="M12 2l6 11h11l-9 7 3 11-11-8-11 8 3-11-9-7h11l6-11z"></path>
+                </svg>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.5rem;">
+            {% if latest_harvest %}
+            <h3 style="margin: 0; font-size: 1.875rem; font-weight: bold;">{{ latest_harvest.quantity|floatformat:0 }}</h3>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">kg</span>
+            {% else %}
+            <h3 style="margin: 0; font-size: 1.875rem; font-weight: bold;">0</h3>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">kg</span>
+            {% endif %}
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            {% if latest_harvest %}
+            <span style="font-size: 0.875rem; color: var(--primary); font-weight: 500;">{{ latest_harvest.pond.name }}</span>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">{{ latest_harvest.date }}</span>
+            {% else %}
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">No harvest yet</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Predicted Harvest Card -->
+    <div class="card" style="position: relative; overflow: hidden;">
+        <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <p class="subtitle" style="margin: 0;">Predicted Harvest</p>
+            <div style="display: flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; background-color: rgba(var(--primary-rgb), 0.1);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);">
+                    <polyline points="23 6 13.46 15.54 8 10 1 17"></polyline><polyline points="23 6 23 16 13 16"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.5rem;">
+            <h3 style="margin: 0; font-size: 1.875rem; font-weight: bold;">{{ total_harvest|add:total_harvest|floatformat:0|default:'0' }}</h3>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">kg</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            <span style="display: flex; align-items: center; font-size: 0.875rem; color: rgb(22, 163, 74);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.25rem;">
+                    <polyline points="23 6 13.46 15.54 8 10 1 17"></polyline><polyline points="23 6 23 16 13 16"></polyline>
+                </svg>
+                +22%
+            </span>
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">estimated</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- Charts Section -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+    
+    <!-- Harvest Over Time Chart -->
+    <div class="card" style="display: flex; flex-direction: column;">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border);">
+            <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600;">Harvest Over Time</h3>
+            <p style="margin: 0.25rem 0 0; font-size: 0.875rem; color: var(--muted-foreground);">Monthly harvest data compared to targets</p>
+        </div>
+        <div style="padding: 1.5rem; flex: 1; min-height: 350px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="harvestChart" style="max-height: 100%;"></canvas>
+        </div>
+    </div>
+
+    <!-- Fish Type Distribution Chart -->
+    <div class="card" style="display: flex; flex-direction: column;">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border);">
+            <h3 style="margin: 0; font-size: 1.125rem; font-weight: 600;">Fish Type Distribution</h3>
+            <p style="margin: 0.25rem 0 0; font-size: 0.875rem; color: var(--muted-foreground);">Harvest breakdown by fish species</p>
+        </div>
+        <div style="padding: 1.5rem; flex: 1; min-height: 350px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="fishTypeChart" style="max-height: 100%;"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- Recent Activity Section -->
+<div class="section-head" style="margin-top: 2rem;">
+    <div>
+        <h2>Recent Harvest Activity</h2>
+        <p class="subtitle">Latest harvest entries from all fishponds</p>
+    </div>
+</div>
+
+<div class="card" style="overflow-x: auto; max-height: 300px; overflow: auto;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--border);">
+                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--muted-foreground);">Harvest ID</th>
+                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--muted-foreground);">Pond</th>
+                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--muted-foreground);">Fish Type</th>
+                <th style="padding: 1rem; text-align: right; font-weight: 600; font-size: 0.875rem; color: var(--muted-foreground);">Quantity (kg)</th>
+                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--muted-foreground);">Date</th>
+                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: var(--muted-foreground);">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for harvest in latest_harvest %}
+            <tr style="border-bottom: 1px solid var(--border); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--muted)'" onmouseout="this.style.backgroundColor='transparent'">
+                <td style="padding: 1rem; font-weight: 500;">H{{ harvest.id }}</td>
+                <td style="padding: 1rem;">{{ harvest.pond.name }}</td>
+                <td style="padding: 1rem;">{{ harvest.fish_type }}</td>
+                <td style="padding: 1rem; text-align: right;">{{ harvest.quantity|floatformat:0 }}</td>
+                <td style="padding: 1rem;">{{ harvest.date }}</td>
+                <td style="padding: 1rem;"><span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 0.375rem; background-color: rgb(220, 252, 231); color: rgb(22, 163, 74); font-size: 0.75rem; font-weight: 500;">completed</span></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="padding: 1rem; text-align: center; color: var(--muted-foreground);">No harvest records yet</td>
+            </tr>
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Color palette for different fish types
+    const fishTypeColors = {
+        'Tilapia': 'rgba(59, 130, 246, 0.8)',      // Blue
+        'Catfish': 'rgba(239, 68, 68, 0.8)',       // Red
+        'Milkfish': 'rgba(139, 92, 246, 0.8)',     // Purple
+        'Carp': 'rgba(16, 185, 129, 0.8)',         // Green
+        'Bangus': 'rgba(245, 158, 11, 0.8)',       // Amber
+        'Snakehead': 'rgba(236, 72, 153, 0.8)',    // Pink
+    };
+    
+    const fishTypeBackgrounds = {
+        'Tilapia': 'rgba(59, 130, 246, 0.1)',
+        'Catfish': 'rgba(239, 68, 68, 0.1)',
+        'Milkfish': 'rgba(139, 92, 246, 0.1)',
+        'Carp': 'rgba(16, 185, 129, 0.1)',
+        'Bangus': 'rgba(245, 158, 11, 0.1)',
+        'Snakehead': 'rgba(236, 72, 153, 0.1)',
+    };
+    
+    // Harvest Over Time Chart with Fish Type Differentiation
+    const harvestCtx = document.getElementById('harvestChart').getContext('2d');
+    const fishTypes = {{ fish_types|safe }};
+    const harvestByFishType = {{ harvest_by_fish_type|safe }};
+    
+    const harvestDatasets = fishTypes.map((fishType, index) => ({
+        label: fishType,
+        data: harvestByFishType[fishType],
+        borderColor: fishTypeColors[fishType] || `hsl(${index * 60}, 70%, 50%)`,
+        backgroundColor: fishTypeBackgrounds[fishType] || `hsl(${index * 60}, 70%, 90%)`,
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: fishTypeColors[fishType] || `hsl(${index * 60}, 70%, 50%)`,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+    }));
+    
+    new Chart(harvestCtx, {
+        type: 'line',
+        data: {
+            labels: {{ months|safe }},
+            datasets: harvestDatasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: 'hsl(var(--foreground))',
+                        padding: 15,
+                        usePointStyle: true,
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'hsl(var(--card))',
+                    titleColor: 'hsl(var(--foreground))',
+                    bodyColor: 'hsl(var(--foreground))',
+                    borderColor: 'hsl(var(--border))',
+                    borderWidth: 1,
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' kg';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'hsl(var(--muted-foreground))',
+                        callback: function(value) {
+                            return (value / 1000).toFixed(1) + 'k';
+                        }
+                    },
+                    grid: {
+                        color: 'hsl(var(--border))',
+                        drawBorder: false,
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: 'hsl(var(--muted-foreground))',
+                    },
+                    grid: {
+                        display: false,
+                        drawBorder: false,
+                    }
+                }
+            }
+        }
+    });
+
+    // Fish Type Distribution Pie Chart with Enhanced Colors
+    const fishTypeCtx = document.getElementById('fishTypeChart').getContext('2d');
+    const species = {{ species|safe }};
+    const speciesQuantities = {{ species_quantities|safe }};
+    
+    const speciesColors = species.map(fish => {
+        const color = fishTypeColors[fish];
+        return color ? color.replace('0.8', '1') : `hsl(${Math.random() * 360}, 70%, 50%)`;
+    });
+    
+    const speciesBackgrounds = species.map(fish => fishTypeBackgrounds[fish] || `hsl(${Math.random() * 360}, 70%, 50%)`);
+    
+    new Chart(fishTypeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: species,
+            datasets: [{
+                data: speciesQuantities,
+                backgroundColor: speciesColors,
+                borderColor: 'hsl(var(--card))',
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'right',
+                    labels: {
+                        color: 'hsl(var(--foreground))',
+                        padding: 15,
+                        usePointStyle: true,
+                        font: { size: 13 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'hsl(var(--card))',
+                    titleColor: 'hsl(var(--foreground))',
+                    bodyColor: 'hsl(var(--foreground))',
+                    borderColor: 'hsl(var(--border))',
+                    borderWidth: 1,
+                    padding: 12,
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(0);
+                            return context.label + ': ' + context.parsed.toLocaleString() + ' kg (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}
+

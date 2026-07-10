@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="space-y-6">
+
+  <!-- PAGE HEADER -->
+  <div>
+    <h1 class="text-2xl font-bold text-foreground">Settings</h1>
+    <p class="text-muted-foreground">Manage your account and application preferences</p>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-3">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <div class="border rounded bg-white shadow-sm h-fit">
+      <div class="p-4">
+        <nav class="space-y-1">
+          <button class="flex w-full items-center gap-3 rounded-lg bg-blue-100 px-3 py-2 text-sm font-medium text-blue-600 active-tab">
+            <span>👤</span>
+            Profile
+          </button>
+          <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 nav-tab" data-tab="notifications">
+            <span>🔔</span>
+            Notifications
+          </button>
+          <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 nav-tab" data-tab="security">
+            <span>🛡️</span>
+            Security
+          </button>
+          <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 nav-tab" data-tab="data">
+            <span>💾</span>
+            Data & Storage
+          </button>
+          <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-900 nav-tab" data-tab="appearance">
+            <span>🎨</span>
+            Appearance
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- MAIN SETTINGS CONTENT -->
+    <div class="space-y-6 lg:col-span-2">
+
+      <!-- PROFILE SETTINGS -->
+      <div class="border rounded bg-white shadow-sm settings-tab" id="profile-tab">
+        <div class="p-6 border-b">
+          <h3 class="font-semibold text-lg flex items-center gap-2">
+            <span>👤</span>
+            Profile Settings
+          </h3>
+          <p class="text-gray-500 text-sm">Update your personal information</p>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <div class="flex items-center gap-4">
+            <div class="flex h-20 w-20 items-center justify-center rounded-full bg-blue-500 text-white text-2xl font-bold">
+              JF
+            </div>
+            <div>
+              <button class="px-3 py-1 border rounded text-sm hover:bg-gray-50">Change Photo</button>
+              <p class="mt-1 text-xs text-gray-500">JPG, PNG or GIF. Max 2MB.</p>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium">First Name</label>
+              <input type="text" value="John" class="w-full px-3 py-2 border rounded">
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-medium">Last Name</label>
+              <input type="text" value="Farmer" class="w-full px-3 py-2 border rounded">
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium">Email</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">✉️</span>
+              <input type="email" value="john@aquafarm.com" class="w-full pl-10 pr-3 py-2 border rounded">
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium">Role</label>
+            <select class="w-full px-3 py-2 border rounded">
+              <option value="admin" selected>Administrator</option>
+              <option value="manager">Farm Manager</option>
+              <option value="worker">Worker</option>
+              <option value="viewer">Viewer</option>
+            </select>
+          </div>
+
+          <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save Changes</button>
+        </div>
+      </div>
+
+      <!-- NOTIFICATION SETTINGS -->
+      <div class="border rounded bg-white shadow-sm settings-tab hidden" id="notifications-tab">
+        <div class="p-6 border-b">
+          <h3 class="font-semibold text-lg flex items-center gap-2">
+            <span>🔔</span>
+            Notification Preferences
+          </h3>
+          <p class="text-gray-500 text-sm">Choose how you want to be notified</p>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium">Harvest Alerts</p>
+              <p class="text-sm text-gray-500">Get notified when harvests are recorded</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium">Prediction Updates</p>
+              <p class="text-sm text-gray-500">Receive weekly prediction reports</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium">Low Stock Warnings</p>
+              <p class="text-sm text-gray-500">Alert when pond stock is below threshold</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium">Maintenance Reminders</p>
+              <p class="text-sm text-gray-500">Scheduled maintenance notifications</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium">Email Notifications</p>
+              <p class="text-sm text-gray-500">Receive notifications via email</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer" checked>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- APPEARANCE SETTINGS -->
+      <div class="border rounded bg-white shadow-sm settings-tab hidden" id="appearance-tab">
+        <div class="p-6 border-b">
+          <h3 class="font-semibold text-lg flex items-center gap-2">
+            <span>🎨</span>
+            Appearance
+          </h3>
+          <p class="text-gray-500 text-sm">Customize your dashboard appearance</p>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium">Theme</label>
+            <select class="w-[200px] px-3 py-2 border rounded">
+              <option value="light" selected>Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium">Dashboard Layout</label>
+            <select class="w-[200px] px-3 py-2 border rounded">
+              <option value="default" selected>Default</option>
+              <option value="compact">Compact</option>
+              <option value="comfortable">Comfortable</option>
+            </select>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium">Sidebar Collapsed</p>
+              <p class="text-sm text-gray-500">Start with sidebar collapsed by default</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" class="sr-only peer">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// TAB NAVIGATION
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    // Remove active class from all tabs
+    document.querySelectorAll('.nav-tab').forEach(t => {
+      t.classList.remove('bg-blue-100', 'text-blue-600');
+      t.classList.add('text-gray-500');
+    });
+
+    // Add active class to clicked tab
+    this.classList.add('bg-blue-100', 'text-blue-600');
+    this.classList.remove('text-gray-500');
+
+    // Hide all settings tabs
+    document.querySelectorAll('.settings-tab').forEach(content => {
+      content.classList.add('hidden');
+    });
+
+    // Show selected tab content
+    const tabId = this.getAttribute('data-tab') + '-tab';
+    document.getElementById(tabId).classList.remove('hidden');
+  });
+});
+
+// SAVE PROFILE FUNCTION
+function saveProfile() {
+  const firstName = document.querySelector('input[placeholder="First Name"]').value;
+  const lastName = document.querySelector('input[placeholder="Last Name"]').value;
+  const email = document.querySelector('input[type="email"]').value;
+  const role = document.querySelector('select').value;
+
+  alert(`Profile saved!\nName: ${firstName} ${lastName}\nEmail: ${email}\nRole: ${role}`);
+}
+
+// SAVE NOTIFICATIONS FUNCTION
+function saveNotifications() {
+  const settings = {
+    harvestAlerts: document.querySelector('input[type="checkbox"]:nth-of-type(1)').checked,
+    predictionUpdates: document.querySelector('input[type="checkbox"]:nth-of-type(2)').checked,
+    lowStockWarnings: document.querySelector('input[type="checkbox"]:nth-of-type(3)').checked,
+    maintenanceReminders: document.querySelector('input[type="checkbox"]:nth-of-type(4)').checked,
+    emailNotifications: document.querySelector('input[type="checkbox"]:nth-of-type(5)').checked
+  };
+
+  alert('Notification preferences saved!');
+}
+
+// SAVE APPEARANCE FUNCTION
+function saveAppearance() {
+  const theme = document.querySelector('#appearance-tab select:nth-of-type(1)').value;
+  const layout = document.querySelector('#appearance-tab select:nth-of-type(2)').value;
+  const sidebarCollapsed = document.querySelector('#appearance-tab input[type="checkbox"]').checked;
+
+  alert(`Appearance settings saved!\nTheme: ${theme}\nLayout: ${layout}\nSidebar Collapsed: ${sidebarCollapsed}`);
+}
+</script>
+
+<style>
+/* Additional styles for the modern design */
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-foreground {
+  color: #1f2937;
+}
+
+.text-muted-foreground {
+  color: #6b7280;
+}
+
+.border {
+  border: 1px solid #e5e7eb;
+}
+
+.rounded {
+  border-radius: 0.5rem;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.grid {
+  display: grid;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.lg\:grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.h-fit {
+  height: fit-content;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.space-y-1 > * + * {
+  margin-top: 0.25rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.bg-primary\/10 {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-primary {
+  color: #3b82f6;
+}
+
+.text-muted-foreground {
+  color: #6b7280;
+}
+
+.hover\:bg-muted:hover {
+  background-color: #f9fafb;
+}
+
+.hover\:text-foreground:hover {
+  color: #1f2937;
+}
+
+.lg\:col-span-2 {
+  grid-column: span 2 / span 2;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.h-20 {
+  height: 5rem;
+}
+
+.w-20 {
+  width: 5rem;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.bg-primary {
+  background-color: #3b82f6;
+}
+
+.text-primary-foreground {
+  color: #ffffff;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.size-sm {
+  height: 2rem;
+  width: auto;
+}
+
+.variant-outline {
+  border: 1px solid #d1d5db;
+  background-color: transparent;
+}
+
+.variant-outline:hover {
+  background-color: #f9fafb;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.md\:grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.relative {
+  position: relative;
+}
+
+.left-3 {
+  left: 0.75rem;
+}
+
+.top-1\/2 {
+  top: 50%;
+}
+
+.-translate-y-1\/2 {
+  transform: translateY(-50%);
+}
+
+.pl-10 {
+  padding-left: 2.5rem;
+}
+
+.w-\[200px\] {
+  width: 200px;
+}
+
+.bg-blue-100 {
+  background-color: #dbeafe;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+.active-tab {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.hover\:bg-gray-50:hover {
+  background-color: #f9fafb;
+}
+
+.hover\:text-gray-900:hover {
+  color: #111827;
+}
+
+.hidden {
+  display: none;
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.hover\:bg-blue-600:hover {
+  background-color: #2563eb;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.w-11 {
+  width: 2.75rem;
+}
+
+.h-6 {
+  height: 1.5rem;
+}
+
+.bg-gray-200 {
+  background-color: #e5e7eb;
+}
+
+.peer-focus\:outline-none:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.peer-focus\:ring-4:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color), var(--tw-ring-shadow);
+}
+
+.peer-focus\:ring-blue-300 {
+  --tw-ring-color: rgb(147 197 253 / var(--tw-ring-opacity));
+  --tw-ring-opacity: 1;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.peer:checked:after:translate-x-full {
+  transform: translateX(100%);
+}
+
+.peer:checked:after:border-white {
+  border-color: #ffffff;
+}
+
+.after\:content-\[\'\'\]::after {
+  content: '';
+}
+
+.after\:absolute::after {
+  position: absolute;
+}
+
+.after\:top-\[2px\]::after {
+  top: 2px;
+}
+
+.after\:left-\[2px\]::after {
+  left: 2px;
+}
+
+.after\:bg-white::after {
+  background-color: #ffffff;
+}
+
+.after\:rounded-full::after {
+  border-radius: 9999px;
+}
+
+.after\:h-5::after {
+  height: 1.25rem;
+}
+
+.after\:w-5::after {
+  width: 1.25rem;
+}
+
+.after\:transition-all::after {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.peer:checked:bg-blue-600 {
+  background-color: #2563eb;
+}
+
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+</style>
+
+{% endblock %}

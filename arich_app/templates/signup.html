@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - AquaFarm Fishpond Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --background: #f0f7f4;
+            --foreground: #1a2e2a;
+            --card: #ffffff;
+            --card-foreground: #1a2e2a;
+            --primary: #2d6a4f;
+            --primary-hover: #1b4332;
+            --primary-light: #d8f3dc;
+            --muted: #e0ece5;
+            --muted-foreground: #6b9080;
+            --destructive: #e63946;
+            --destructive-foreground: #ffffff;
+            --success: #2d6a4f;
+            --border: #e0ece5;
+            --input: #f8faf9;
+            --ring: rgba(45, 106, 79, 0.2);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 1px 3px rgba(26,46,42,0.04), 0 8px 24px rgba(26,46,42,0.06);
+            --shadow-hover: 0 1px 3px rgba(26,46,42,0.04), 0 12px 32px rgba(26,46,42,0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            color: var(--foreground);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 760px;
+        }
+
+        .auth-wrapper {
+            display: grid;
+            grid-template-columns: minmax(220px, 280px) minmax(320px, 1fr);
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        .info-panel {
+            background: linear-gradient(135deg, var(--primary) 0%, #40916c 100%);
+            border-radius: var(--radius);
+            padding: 2rem;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.25rem;
+            min-width: 0;
+        }
+
+        .logo-section {
+            text-align: left;
+            margin: 0;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo-section h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-top: 0.5rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .logo-section p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .info-copy {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.6;
+        }
+
+        .info-panel .card {
+            box-shadow: none;
+            border: none;
+            background: transparent;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-header {
+            padding: 2rem 2rem 1.25rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--card-foreground);
+            margin-bottom: 0.35rem;
+        }
+
+        .card-description {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .card-content {
+            padding: 0 2rem 2rem;
+        }
+
+        .card-footer {
+            padding: 1.25rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            background: #fafcfb;
+        }
+
+        /* Form */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            gap: 0.4rem;
+        }
+
+        .form-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--muted-foreground);
+            font-size: 1rem;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            opacity: 0.7;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 14px 12px 44px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--input);
+            color: var(--foreground);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"] {
+            padding: 12px 14px 12px 44px;
+        }
+
+        input[type="email"]::placeholder,
+        input[type="password"]::placeholder,
+        input[type="text"]::placeholder {
+            color: #a3b8ad;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px var(--ring);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted-foreground);
+            font-size: 1rem;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* Password Requirements */
+        .password-requirements {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+            margin-top: 0.25rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .req-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .req-item::before {
+            content: '○';
+            font-size: 0.6rem;
+            color: var(--muted-foreground);
+        }
+
+        .req-item.met {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .req-item.met::before {
+            content: '●';
+            color: var(--primary);
+        }
+
+        /* Captcha */
+        .captcha-box {
+            background: var(--input);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .captcha-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .captcha-display {
+            background: linear-gradient(135deg, #e8f5e9 0%, #d8f3dc 100%);
+            border: 1px dashed var(--primary);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 6px;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .captcha-display::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(45, 106, 79, 0.03) 3px,
+                rgba(45, 106, 79, 0.03) 6px
+            );
+            pointer-events: none;
+        }
+
+        .captcha-refresh {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            align-self: flex-start;
+        }
+
+        .captcha-refresh:hover {
+            background: var(--primary-light);
+        }
+
+        .captcha-input {
+            padding: 10px 12px !important;
+            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin-top: -0.25rem;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+            border-radius: 5px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .checkbox-label {
+            font-size: 0.875rem;
+            color: var(--foreground);
+            cursor: pointer;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .checkbox-label a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        /* Buttons */
+        .submit-btn {
+            padding: 13px 16px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 0.25rem;
+            letter-spacing: 0.2px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(45, 106, 79, 0.25);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Messages */
+        .error-message {
+            padding: 12px 14px;
+            background: #ffe5e5;
+            color: var(--destructive);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(230, 57, 70, 0.15);
+        }
+
+        .success-message {
+            padding: 12px 14px;
+            background: #e8f5e9;
+            color: var(--success);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(45, 106, 79, 0.15);
+        }
+
+        /* Footer Text */
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .footer-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Wave decoration */
+        .wave-decoration {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%232d6a4f' fill-opacity='0.05' d='M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,224C672,245,768,267,864,261.3C960,256,1056,224,1152,208C1248,192,1344,192,1392,192L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") no-repeat bottom;
+            background-size: cover;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .card-header,
+            .card-content,
+            .card-footer {
+                padding-left: 1.25rem;
+                padding-right: 1.25rem;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-container {
+                max-width: 100%;
+            }
+
+            .logo-section h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Loading state */
+        .submit-btn.loading {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="wave-decoration"></div>
+
+    <div class="auth-container">
+        <div class="auth-wrapper">
+            <div class="info-panel">
+                <div class="logo-section">
+                    <div class="logo-icon">🐟</div>
+                    <div class="logo-text">
+                        <h1>AquaFarm</h1>
+                        <p>Smart Fishpond Management</p>
+                    </div>
+                </div>
+                <p class="info-copy">Register quickly and keep your fishpond data organized without the large welcome panel taking up form space.</p>
+            </div>
+
+            <!-- Signup Card -->
+            <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Create an account</h2>
+                <p class="card-description">Start monitoring your fishpond today</p>
+            </div>
+
+            <div class="card-content">
+                <form method="post" id="signupForm">
+                    {% csrf_token %}
+
+                    {% if error %}
+                    <div class="error-message">{{ error }}</div>
+                    {% endif %}
+
+                    {% if success %}
+                    <div class="success-message">{{ success }}</div>
+                    {% endif %}
+
+                    <!-- First Name & Last Name -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="first_name">First name</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">👤</span>
+                                <input
+                                    type="text"
+                                    id="first_name"
+                                    name="first_name"
+                                    placeholder="John"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="last_name">Last name</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="text"
+                                    id="last_name"
+                                    name="last_name"
+                                    placeholder="Farmer"
+                                    required
+                                    style="padding-left: 14px;"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">✉️</span>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="john@aquafarm.com"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Create a strong password"
+                                required
+                                minlength="8"
+                                oninput="checkPasswordStrength()"
+                            />
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                onclick="togglePasswordVisibility()"
+                                id="toggleBtn"
+                                aria-label="Toggle password visibility"
+                            >👁️</button>
+                        </div>
+                        <div class="password-requirements">
+                            <span class="req-item" id="req-len">8+ chars</span>
+                            <span class="req-item" id="req-upper">Uppercase</span>
+                            <span class="req-item" id="req-lower">Lowercase</span>
+                            <span class="req-item" id="req-num">Number</span>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Password Field -->
+                    <div class="form-group">
+                        <label class="form-label" for="confirm_password">Confirm Password</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔐</span>
+                            <input
+                                type="password"
+                                id="confirm_password"
+                                name="confirm_password"
+                                placeholder="Re-enter your password"
+                                required
+                            />
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                onclick="toggleConfirmPasswordVisibility()"
+                                id="toggleConfirmBtn"
+                                aria-label="Toggle confirm password visibility"
+                            >👁️</button>
+                        </div>
+                    </div>
+
+                    <!-- Captcha -->
+                    <div class="form-group">
+                        <div class="captcha-box">
+                            <div class="captcha-label">Security Check</div>
+                            <div class="captcha-display" id="captchaDisplay">A7K9P2</div>
+                            <button type="button" class="captcha-refresh" onclick="generateCaptcha()">
+                                🔄 Generate new code
+                            </button>
+                            <input
+                                type="text"
+                                id="captcha"
+                                name="captcha"
+                                placeholder="Enter the code above"
+                                required
+                                maxlength="6"
+                                class="captcha-input"
+                                style="padding-left: 12px !important;"
+                                autocomplete="off"
+                            />
+                            <div id="captchaError" class="error-message" style="display:none;margin-top:0.5rem;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Terms & Conditions -->
+                    <div class="checkbox-group">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            name="terms"
+                            required
+                        />
+                        <label class="checkbox-label" for="terms">
+                            I agree to the <a href="#terms-of-service">Terms of Service</a> and <a href="#privacy-policy">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn">Create account</button>
+                </form>
+            </div>
+
+            <div class="card-footer">
+                <p class="footer-text">
+                    Already have an account? 
+                    <a href="{% url 'login' %}">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---- Toggle Password Visibility (main password) ----
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.getElementById('toggleBtn');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+                toggleBtn.setAttribute('aria-label', 'Hide password');
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+                toggleBtn.setAttribute('aria-label', 'Show password');
+            }
+        }
+
+        // ---- Toggle Confirm Password Visibility ----
+        function toggleConfirmPasswordVisibility() {
+            const confirmInput = document.getElementById('confirm_password');
+            const toggleBtn = document.getElementById('toggleConfirmBtn');
+            
+            if (confirmInput.type === 'password') {
+                confirmInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+                toggleBtn.setAttribute('aria-label', 'Hide password');
+            } else {
+                confirmInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+                toggleBtn.setAttribute('aria-label', 'Show password');
+            }
+        }
+
+        // ---- Password Strength Checker ----
+        function checkPasswordStrength() {
+            const val = document.getElementById('password').value;
+            document.getElementById('req-len').classList.toggle('met', val.length >= 8);
+            document.getElementById('req-upper').classList.toggle('met', /[A-Z]/.test(val));
+            document.getElementById('req-lower').classList.toggle('met', /[a-z]/.test(val));
+            document.getElementById('req-num').classList.toggle('met', /[0-9]/.test(val));
+        }
+
+        // ---- Captcha Generator ----
+        function generateCaptcha() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('captchaDisplay').textContent = code;
+        }
+
+        // Initialize captcha on load
+        generateCaptcha();
+
+        // Handle form submission with captcha validation
+        (function() {
+            const form = document.getElementById('signupForm');
+            const submitBtn = document.querySelector('.submit-btn');
+            const captchaDisplayEl = document.getElementById('captchaDisplay');
+            const captchaInputEl = document.getElementById('captcha');
+            const captchaError = document.getElementById('captchaError');
+
+            form.addEventListener('submit', function(e) {
+                const expected = (captchaDisplayEl.textContent || '').trim().toUpperCase();
+                const given = (captchaInputEl.value || '').trim().toUpperCase();
+
+                if (!given || given !== expected) {
+                    e.preventDefault();
+                    captchaError.textContent = 'Captcha does not match. Please try again.';
+                    captchaError.style.display = 'block';
+                    generateCaptcha();
+                    captchaInputEl.value = '';
+                    captchaInputEl.focus();
+                    return;
+                }
+
+                // hide any previous error and proceed
+                captchaError.style.display = 'none';
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating account...';
+                submitBtn.classList.add('loading');
+            });
+        })();
+    </script>
+</body>
+</html>

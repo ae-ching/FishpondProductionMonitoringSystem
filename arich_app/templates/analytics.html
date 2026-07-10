@@ -1,0 +1,741 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="space-y-8 p-6">
+
+  <!-- HEADER -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Analytics</h1>
+      <p class="text-slate-500 mt-1">
+        Comprehensive analytics and insights for your fishpond operations
+      </p>
+    </div>
+
+    <button class="px-5 py-2.5 border border-slate-200 rounded-xl flex items-center gap-2 bg-white text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+      Refresh Data
+    </button>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="border border-slate-200 p-6 rounded-2xl bg-white shadow-sm">
+    <h2 class="font-semibold mb-1 text-lg text-slate-800">Filters</h2>
+    <p class="text-slate-400 text-sm mb-5">Customize your analytics view</p>
+
+    <div class="flex flex-wrap gap-4 items-end">
+
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-slate-600">Date Range</label>
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <input type="date" class="w-44 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all bg-slate-50">
+            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            </span>
+          </div>
+          <span class="text-slate-400 text-sm">to</span>
+          <div class="relative">
+            <input type="date" class="w-44 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all bg-slate-50">
+            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-slate-600">Pond</label>
+        <select id="pondSelect" class="w-44 px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition-all bg-slate-50 cursor-pointer">
+          <option value="all">All Ponds</option>
+          {% for pond in ponds %}
+          <option value="{{ pond.id }}">{{ pond.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button class="px-6 py-2.5 bg-indigo-400 text-white rounded-xl hover:bg-indigo-500 transition-all shadow-sm font-medium text-sm">
+        Apply Filters
+      </button>
+
+    </div>
+  </div>
+
+  <!-- CHARTS GRID -->
+  <div class="grid gap-6 lg:grid-cols-2">
+
+    <!-- LINE CHART -->
+    <div class="border border-slate-200 p-6 rounded-2xl bg-white shadow-sm lg:col-span-2">
+      <h3 class="font-semibold mb-1 text-slate-800">Harvest Over Time</h3>
+      <p class="text-slate-400 text-sm mb-5">Monthly harvest trends throughout the year</p>
+      <div class="h-80">
+        <canvas id="lineChart"></canvas>
+      </div>
+    </div>
+
+    <!-- BAR CHART -->
+    <div class="border border-slate-200 p-6 rounded-2xl bg-white shadow-sm">
+      <h3 class="font-semibold mb-1 text-slate-800">Harvest per Pond</h3>
+      <p class="text-slate-400 text-sm mb-5">Total harvest comparison by pond</p>
+      <div class="h-80">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+
+    <!-- PIE CHART -->
+    <div class="border border-slate-200 p-6 rounded-2xl bg-white shadow-sm">
+      <h3 class="font-semibold mb-1 text-slate-800">Fish Type Distribution</h3>
+      <p class="text-slate-400 text-sm mb-5">Harvest breakdown by fish species</p>
+      <div class="h-80">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SUMMARY STATS -->
+  <div class="grid gap-5 md:grid-cols-4">
+
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-sm font-medium text-slate-500">Total Records</h4>
+        <div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-rose-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold text-slate-800">{{ harvests|length }}</div>
+      <p class="text-xs text-slate-400 mt-1">Harvest records tracked</p>
+    </div>
+
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-sm font-medium text-slate-500">Total Quantity</h4>
+        <div class="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-sky-400"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold text-slate-800" id="totalQtyDisplay">-</div>
+      <p class="text-xs text-slate-400 mt-1">Total kg harvested</p>
+    </div>
+
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-sm font-medium text-slate-500">Best Performing Pond</h4>
+        <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-400"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold text-slate-800" id="bestPond">-</div>
+      <p class="text-xs text-slate-400 mt-1" id="bestPondQuantity">-</p>
+    </div>
+
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <h4 class="text-sm font-medium text-slate-500">Top Fish Type</h4>
+        <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6-3.56 0-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"/><path d="M10.46 7.26C10.2 5.88 9.17 4.24 8.1 3.09c-1.1-.25-2.8.7-3.87 2.29-1.1.25-2.8.7-3.87 2.29"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl font-bold text-slate-800" id="topSpecies">-</div>
+      <p class="text-xs text-slate-400 mt-1" id="topSpeciesQuantity">-</p>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CHART.JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* -------------------------
+// DATA (adapted from React component)
+--------------------------*/
+
+// Line chart data - Monthly harvest trends
+const harvestOverTime = {
+  labels: {{ months|safe }},
+  datasets: [{
+    label: "Harvest (kg)",
+    data: {{ monthly_quantities|safe }},
+    borderColor: "#3730a3",
+    backgroundColor: "rgba(55, 48, 163, 0.22)",
+    fill: true,
+    tension: 0.4,
+    pointBackgroundColor: "#ffffff",
+    pointBorderColor: "#3730a3",
+    pointBorderWidth: 2,
+    pointRadius: 5,
+    pointHoverRadius: 7
+  }]
+};
+
+// Bar chart data - Harvest by pond
+const colors = ["#d97706","#b91c1c","#047857","#ca8a04","#0f766e","#1d4ed8","#be185d","#0f766e"];
+const harvestPerPond = {
+  labels: {{ pond_names|safe }},
+  datasets: [{
+    label: "Harvest",
+    data: {{ pond_quantities|safe }},
+    backgroundColor: colors.slice(0, {{ pond_names|length }}),
+    borderRadius: 8,
+    borderSkipped: false
+  }]
+};
+
+// Pie chart data - Fish species distribution
+const pieColors = ["#7c3aed","#be185d","#0f766e","#1d4ed8","#c2410c","#9333ea"];
+const fishType = {
+  labels: {{ species|safe }},
+  datasets: [{
+    data: {{ species_quantities|safe }},
+    backgroundColor: pieColors.slice(0, {{ species|length }}),
+    borderWidth: 3,
+    borderColor: "#ffffff"
+  }]
+};
+
+/* -------------------------
+// RENDER CHARTS
+--------------------------*/
+
+// LINE CHART
+new Chart(document.getElementById("lineChart"), {
+  type: "line",
+  data: harvestOverTime,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          padding: 20,
+          font: {
+            size: 12,
+            family: "'Inter', sans-serif"
+          },
+          color: '#334155'
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+        titleColor: '#e2e8f0',
+        bodyColor: '#e2e8f0',
+        borderColor: '#334155',
+        borderWidth: 1,
+        cornerRadius: 12,
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          label: function(context) {
+            return context.parsed.y.toLocaleString() + ' kg';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          color: '#475569',
+          font: {
+            size: 12,
+            family: "'Inter', sans-serif"
+          }
+        }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: '#475569',
+          font: {
+            size: 12,
+            family: "'Inter', sans-serif"
+          },
+          callback: function(value) {
+            return (value / 1000) + 'k';
+          }
+        },
+        grid: {
+          color: '#e2e8f0',
+          drawBorder: false
+        }
+      }
+    },
+    elements: {
+      point: {
+        hoverBorderWidth: 3
+      },
+      line: {
+        borderWidth: 3
+      }
+    }
+  }
+});
+
+// BAR CHART
+new Chart(document.getElementById("barChart"), {
+  type: "bar",
+  data: harvestPerPond,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        titleColor: '#1e293b',
+        bodyColor: '#1e293b',
+        borderColor: '#e2e8f0',
+        borderWidth: 1,
+        cornerRadius: 12,
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          label: function(context) {
+            return context.parsed.y.toLocaleString() + ' kg';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          color: '#94a3b8',
+          font: {
+            size: 12,
+            family: "'Inter', sans-serif"
+          }
+        }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: '#94a3b8',
+          font: {
+            size: 12,
+            family: "'Inter', sans-serif"
+          },
+          callback: function(value) {
+            return (value / 1000) + 'k';
+          }
+        },
+        grid: {
+          color: '#f1f5f9',
+          drawBorder: false
+        }
+      }
+    }
+  }
+});
+
+// PIE CHART
+new Chart(document.getElementById("pieChart"), {
+  type: "pie",
+  data: fishType,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 12,
+            family: "'Inter', sans-serif"
+          },
+          color: '#334155'
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+        titleColor: '#e2e8f0',
+        bodyColor: '#e2e8f0',
+        borderColor: '#334155',
+        borderWidth: 1,
+        cornerRadius: 12,
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          label: function(context) {
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = ((context.parsed / total) * 100).toFixed(1);
+            return context.label + ': ' + context.parsed.toLocaleString() + ' kg (' + percentage + '%)';
+          }
+        }
+      }
+    }
+  }
+});
+
+/* -------------------------
+// UPDATE SUMMARY STATS
+--------------------------*/
+
+// Calculate total quantity
+const totalQty = harvestPerPond.datasets[0].data.reduce((a, b) => a + b, 0);
+document.getElementById('totalQtyDisplay').textContent = totalQty.toLocaleString() + ' kg';
+
+// Find best performing pond
+const bestPondIndex = harvestPerPond.datasets[0].data.indexOf(Math.max(...harvestPerPond.datasets[0].data));
+const bestPondName = harvestPerPond.labels[bestPondIndex];
+const bestPondQty = harvestPerPond.datasets[0].data[bestPondIndex];
+document.getElementById('bestPond').textContent = bestPondName || '-';
+document.getElementById('bestPondQuantity').textContent = bestPondQty.toLocaleString() + ' kg total';
+
+// Find top fish species
+const topSpeciesIndex = fishType.datasets[0].data.indexOf(Math.max(...fishType.datasets[0].data));
+const topSpeciesName = fishType.labels[topSpeciesIndex];
+const topSpeciesQty = fishType.datasets[0].data[topSpeciesIndex];
+const totalSpecies = fishType.datasets[0].data.reduce((a, b) => a + b, 0);
+const topSpeciesPercent = ((topSpeciesQty / totalSpecies) * 100).toFixed(1);
+document.getElementById('topSpecies').textContent = topSpeciesName || '-';
+document.getElementById('topSpeciesQuantity').textContent = topSpeciesQty.toLocaleString() + ' kg (' + topSpeciesPercent + '%)';
+
+</script>
+
+<style>
+/* Additional styles for the modern design */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+}
+
+.space-y-8 > * + * {
+  margin-top: 2rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.text-slate-800 {
+  color: #1e293b;
+}
+
+.text-slate-500 {
+  color: #64748b;
+}
+
+.text-slate-600 {
+  color: #475569;
+}
+
+.text-slate-400 {
+  color: #94a3b8;
+}
+
+.text-slate-700 {
+  color: #334155;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.border {
+  border: 1px solid #e2e8f0;
+}
+
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+}
+
+.hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.transition-shadow {
+  transition: box-shadow 0.2s ease;
+}
+
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+.hover\:bg-slate-50:hover {
+  background-color: #f8fafc;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.py-2\.5 {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+.px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.p-5 {
+  padding: 1.25rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-5 {
+  gap: 1.25rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.block {
+  display: block;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.w-44 {
+  width: 11rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.pr-10 {
+  padding-right: 2.5rem;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.right-3 {
+  right: 0.75rem;
+}
+
+.top-1\/2 {
+  top: 50%;
+}
+
+.transform {
+  transform: translate(var(--tw-transform));
+}
+
+.-translate-y-1\/2 {
+  transform: translateY(-50%);
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.lg\:grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lg\:col-span-2 {
+  grid-column: span 2 / span 2;
+}
+
+.h-80 {
+  height: 20rem;
+}
+
+.md\:grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.w-9 {
+  width: 2.25rem;
+}
+
+.h-9 {
+  height: 2.25rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.bg-rose-50 {
+  background-color: #fff1f2;
+}
+
+.text-rose-400 {
+  color: #fb7185;
+}
+
+.bg-sky-50 {
+  background-color: #f0f9ff;
+}
+
+.text-sky-400 {
+  color: #38bdf8;
+}
+
+.bg-amber-50 {
+  background-color: #fffbeb;
+}
+
+.text-amber-400 {
+  color: #fbbf24;
+}
+
+.bg-emerald-50 {
+  background-color: #ecfdf5;
+}
+
+.text-emerald-400 {
+  color: #34d399;
+}
+
+.bg-indigo-400 {
+  background-color: #818cf8;
+}
+
+.hover\:bg-indigo-500:hover {
+  background-color: #6366f1;
+}
+
+.focus\:outline-none:focus {
+  outline: none;
+}
+
+.focus\:ring-2:focus {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:ring-indigo-100:focus {
+  --tw-ring-color: #e0e7ff;
+}
+
+.focus\:border-indigo-300:focus {
+  border-color: #a5b4fc;
+}
+
+.bg-slate-50 {
+  background-color: #f8fafc;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.justify-center {
+  justify-content: center;
+}
+</style>
+
+{% endblock %}

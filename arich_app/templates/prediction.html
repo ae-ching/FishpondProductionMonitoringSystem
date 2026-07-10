@@ -1,0 +1,960 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="page-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Harvest Predictions</h1>
+      <p class="page-subtitle">AI-powered harvest forecasting and trend analysis</p>
+    </div>
+
+    <button id="generatePredictionButton" type="button" class="btn btn-primary">
+      <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
+        <path d="M12 2a10 10 0 0 1 10 10"/>
+        <path d="M12 12L2.5 8.5"/>
+      </svg>
+      Generate New Prediction
+    </button>
+  </div>
+
+  <!-- PREDICTION CONTROLS -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Prediction Parameters</h3>
+      <p class="card-subtitle">Select pond and fish type to view specific predictions</p>
+    </div>
+
+    <div class="card-body">
+      <div class="form-row">
+
+        <div class="form-group">
+          <label class="form-label" for="selectedPond">Pond</label>
+          <select id="selectedPond" class="form-select">
+            <option value="">Select a pond</option>
+            {% for pond in ponds %}
+              <option value="{{ pond.id }}">{{ pond.name }}</option>
+            {% empty %}
+              <option value="" disabled>No ponds available</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="selectedFishType">Fish Type</label>
+          <select id="selectedFishType" class="form-select" disabled>
+            <option value="">Select a fish type</option>
+          </select>
+        </div>
+
+        <button id="applyPredictionButton" type="button" class="btn btn-outline">Apply</button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN PREDICTION CARD -->
+  <div class="prediction-hero">
+    <div class="prediction-hero-header">
+      <div class="prediction-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
+          <path d="M12 2a10 10 0 0 1 10 10"/>
+          <path d="M12 12L2.5 8.5"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="prediction-hero-title">Next Month Prediction</h3>
+        <p class="prediction-hero-subtitle">Based on historical data and seasonal patterns</p>
+      </div>
+    </div>
+
+    <div class="prediction-hero-body">
+      <div class="prediction-metrics">
+
+        <div class="metric">
+          <div class="metric-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="6"/>
+              <circle cx="12" cy="12" r="2"/>
+            </svg>
+            Expected Harvest
+          </div>
+          <div id="predictionValue" class="metric-value">—</div>
+          <div class="metric-footer">
+            <span id="predictionSummaryIcon" class="metric-icon">⊘</span>
+            <span id="predictionSummary" class="metric-caption">Select a pond and fish type to generate a prediction.</span>
+          </div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            Trend
+          </div>
+          <div id="predictionTrend" class="metric-value">—</div>
+          <div class="metric-bar-track">
+            <div id="predictionTrendBar" class="metric-bar-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Historical Records
+          </div>
+          <div id="predictionHistoryCount" class="metric-value">—</div>
+          <p id="predictionMeta" class="metric-caption">Choose a pond and fish type to start.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORICAL TREND + NEXT PREDICTION -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Historical Harvest Trend</h3>
+      <p class="card-subtitle">Historical harvest data for the selected pond and fish type, plus the next predicted harvest from the existing machine learning model.</p>
+    </div>
+
+    <div class="card-body">
+      <div class="chart-container">
+        <canvas id="predictionChart"></canvas>
+      </div>
+      <div id="predictionChartMessage" class="chart-message">
+        Select a pond and fish type, then generate a prediction to view the historical trend and next harvest estimate.
+      </div>
+    </div>
+  </div>
+
+  <!-- POND-WISE PREDICTIONS -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Prediction Details</h3>
+      <p class="card-subtitle">Select a pond and fish type to view the current prediction result.</p>
+    </div>
+
+    <div class="card-body">
+      <div class="empty-state">
+        <p class="empty-state-title">Detailed multi-pond forecasts are not available yet.</p>
+        <p class="empty-state-text">Generate a prediction for a specific pond and fish type to view the live ML result.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const harvestHistoryData = {{ harvest_history_json|safe }};
+let predictionChart = null;
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
+}
+
+function setPredictionCardDefaults() {
+  const predictionValue = document.getElementById('predictionValue');
+  const predictionTrend = document.getElementById('predictionTrend');
+  const predictionHistoryCount = document.getElementById('predictionHistoryCount');
+  const predictionSummary = document.getElementById('predictionSummary');
+  const predictionSummaryIcon = document.getElementById('predictionSummaryIcon');
+  const predictionMeta = document.getElementById('predictionMeta');
+  const predictionTrendBar = document.getElementById('predictionTrendBar');
+
+  if (predictionValue) predictionValue.textContent = '—';
+  if (predictionTrend) predictionTrend.textContent = '—';
+  if (predictionHistoryCount) predictionHistoryCount.textContent = '—';
+  if (predictionSummary) {
+    predictionSummary.textContent = 'Select a pond and fish type to generate a prediction.';
+    predictionSummary.className = 'metric-caption';
+  }
+  if (predictionSummaryIcon) {
+    predictionSummaryIcon.className = 'metric-icon';
+    predictionSummaryIcon.textContent = '⊘';
+  }
+  if (predictionMeta) {
+    predictionMeta.textContent = 'Choose a pond and fish type to start.';
+  }
+  if (predictionTrendBar) {
+    predictionTrendBar.style.width = '0%';
+    predictionTrendBar.className = 'metric-bar-fill';
+  }
+}
+
+function renderPredictionResult(data) {
+  const predictionValue = document.getElementById('predictionValue');
+  const predictionTrend = document.getElementById('predictionTrend');
+  const predictionHistoryCount = document.getElementById('predictionHistoryCount');
+  const predictionSummary = document.getElementById('predictionSummary');
+  const predictionSummaryIcon = document.getElementById('predictionSummaryIcon');
+  const predictionMeta = document.getElementById('predictionMeta');
+  const predictionTrendBar = document.getElementById('predictionTrendBar');
+
+  if (!predictionValue || !predictionTrend || !predictionHistoryCount) return;
+
+  if (data.success) {
+    const formattedPrediction = Number(data.prediction).toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+    });
+    predictionValue.textContent = `${formattedPrediction} kg`;
+    predictionTrend.textContent = data.trend || '—';
+    predictionHistoryCount.textContent = data.history_count || '—';
+
+    const trendText = data.trend || 'Stable';
+    const trendIcon = trendText === 'Increasing' ? '↑' : trendText === 'Decreasing' ? '↓' : '−';
+    const trendColor = trendText === 'Increasing' ? 'metric-caption-success' : trendText === 'Decreasing' ? 'metric-caption-danger' : 'metric-caption';
+    const barColor = trendText === 'Increasing' ? 'metric-bar-fill-success' : trendText === 'Decreasing' ? 'metric-bar-fill-danger' : 'metric-bar-fill';
+
+    if (predictionSummary) {
+      predictionSummary.textContent = data.message || 'Prediction generated successfully.';
+      predictionSummary.className = `metric-caption ${trendColor}`;
+    }
+    if (predictionSummaryIcon) {
+      predictionSummaryIcon.className = `metric-icon ${trendColor}`;
+      predictionSummaryIcon.textContent = trendIcon;
+    }
+    if (predictionMeta) {
+      const previousHarvest = data.previous_harvest != null ? `${Number(data.previous_harvest).toLocaleString(undefined, { maximumFractionDigits: 2 })} kg` : 'Not available';
+      predictionMeta.textContent = `Previous harvest: ${previousHarvest}`;
+    }
+    if (predictionTrendBar) {
+      predictionTrendBar.style.width = '100%';
+      predictionTrendBar.className = `metric-bar-fill ${barColor}`;
+    }
+  } else {
+    predictionValue.textContent = '—';
+    predictionTrend.textContent = '—';
+    predictionHistoryCount.textContent = '—';
+    if (predictionSummary) {
+      predictionSummary.textContent = data.message || 'Prediction unavailable.';
+      predictionSummary.className = 'metric-caption metric-caption-danger';
+    }
+    if (predictionSummaryIcon) {
+      predictionSummaryIcon.className = 'metric-icon metric-caption-danger';
+      predictionSummaryIcon.textContent = '!';
+    }
+    if (predictionMeta) {
+      predictionMeta.textContent = 'Please select a valid pond and fish type.';
+    }
+    if (predictionTrendBar) {
+      predictionTrendBar.style.width = '0%';
+      predictionTrendBar.className = 'metric-bar-fill metric-bar-fill-danger';
+    }
+  }
+}
+
+function getHistoricalSeries(pondId, fishTypeId) {
+  if (!pondId || !fishTypeId) return [];
+
+  return harvestHistoryData
+    .filter((item) => Number(item.pond_id) === Number(pondId) && Number(item.fish_type_id) === Number(fishTypeId))
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+function formatChartLabel(dateString) {
+  const parsedDate = new Date(dateString);
+  return parsedDate.toLocaleDateString('en', { month: 'short', year: 'numeric' });
+}
+
+function updatePredictionChart(pondId, fishTypeId, predictionData) {
+  const chartCanvas = document.getElementById('predictionChart');
+  const chartMessage = document.getElementById('predictionChartMessage');
+
+  if (!chartCanvas || !chartMessage) return;
+
+  const historySeries = getHistoricalSeries(pondId, fishTypeId);
+
+  if (predictionChart) {
+    predictionChart.destroy();
+    predictionChart = null;
+  }
+
+  if (chartCanvas) {
+    chartCanvas.style.width = '100%';
+    chartCanvas.style.height = '100%';
+  }
+
+  if (!historySeries.length) {
+    chartMessage.innerHTML = '<p style="font-weight:500;color:#374151;margin-bottom:0.25rem;">No historical harvest data is available for this selection.</p><p>Generate harvest records for the selected pond and fish type to view the trend chart.</p>';
+    return;
+  }
+
+  const labels = historySeries.map((item) => formatChartLabel(item.date));
+  const historicalValues = historySeries.map((item) => item.quantity);
+
+  const datasets = [];
+  const historicalChartValues = [...historicalValues];
+
+  datasets.push({
+    label: 'Historical harvest',
+    data: historicalChartValues,
+      borderColor: '#064e45',
+      backgroundColor: 'rgba(6, 78, 69, 0.18)',
+      pointBackgroundColor: '#064e45',
+      pointBorderColor: '#064e45',
+    fill: false,
+    tension: 0.3,
+  });
+
+  if (predictionData && predictionData.success && historySeries.length >= 3) {
+    labels.push('Next Harvest');
+    historicalChartValues.push(null);
+    const connectorData = Array(labels.length).fill(null);
+    connectorData[historySeries.length - 1] = historicalValues[historicalValues.length - 1];
+    connectorData[historySeries.length] = Number(predictionData.prediction);
+
+    datasets.push({
+      label: 'Next predicted harvest',
+      data: connectorData,
+      borderColor: '#7c3aed',
+      backgroundColor: '#7c3aed',
+      pointBackgroundColor: '#7c3aed',
+      pointBorderColor: '#7c3aed',
+      pointRadius: 6,
+      pointHoverRadius: 7,
+      borderWidth: 2.5,
+      borderDash: [7, 5],
+      fill: false,
+      tension: 0,
+    });
+
+    chartMessage.innerHTML = `<p style="font-weight:500;color:#374151;margin-bottom:0.25rem;">Estimated next harvest: ${Number(predictionData.prediction).toLocaleString(undefined, { maximumFractionDigits: 2 })} kg</p><p>The solid line shows historical harvests and the dashed segment connects the latest historical value to the next predicted harvest.</p>`;
+  } else if (historySeries.length < 3) {
+    chartMessage.innerHTML = '<p style="font-weight:500;color:#374151;margin-bottom:0.25rem;">At least 3 historical harvest records are required before a prediction can be generated.</p><p>The chart below shows the available historical trend for this pond and fish type.</p>';
+  } else {
+    chartMessage.innerHTML = '<p style="font-weight:500;color:#374151;margin-bottom:0.25rem;">The prediction could not be generated for this selection.</p><p>The chart below shows the available historical trend.</p>';
+  }
+
+  predictionChart = new Chart(chartCanvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 0,
+      },
+      layout: {
+        padding: {
+          top: 8,
+          right: 12,
+          bottom: 0,
+          left: 8,
+        },
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: { size: 12, family: 'Inter, -apple-system, sans-serif' },
+            color: '#334155',
+          },
+        },
+        tooltip: {
+          backgroundColor: '#111827',
+          titleFont: { size: 12, family: 'Inter, -apple-system, sans-serif' },
+          bodyFont: { size: 12, family: 'Inter, -apple-system, sans-serif' },
+          padding: 12,
+          cornerRadius: 8,
+          callbacks: {
+            label(context) {
+              return `${context.dataset.label}: ${Number(context.parsed.y).toLocaleString(undefined, { maximumFractionDigits: 2 })} kg`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Harvest Month',
+            font: { size: 11, weight: '500', family: 'Inter, -apple-system, sans-serif' },
+            color: '#475569',
+          },
+          grid: {
+            color: '#e2e8f0',
+          },
+          ticks: {
+            font: { size: 11, family: 'Inter, -apple-system, sans-serif' },
+            color: '#475569',
+            maxRotation: 35,
+            minRotation: 25,
+            autoSkip: true,
+            maxTicksLimit: 8,
+          },
+        },
+        y: {
+          beginAtZero: false,
+          grace: '8%',
+          title: {
+            display: true,
+            text: 'Harvest Quantity (kg)',
+            font: { size: 11, weight: '500', family: 'Inter, -apple-system, sans-serif' },
+            color: '#475569',
+          },
+          grid: {
+            color: '#e2e8f0',
+          },
+          ticks: {
+            font: { size: 11, family: 'Inter, -apple-system, sans-serif' },
+            color: '#475569',
+            callback(value) {
+              const numericValue = Number(value);
+              if (numericValue >= 1000000) {
+                return `${(numericValue / 1000000).toLocaleString(undefined, { maximumFractionDigits: 2 })}M kg`;
+              }
+              if (numericValue >= 1000) {
+                return `${(numericValue / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k kg`;
+              }
+              return `${numericValue.toLocaleString()} kg`;
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+async function loadFishTypesForPond(pondId) {
+  const fishTypeSelect = document.getElementById('selectedFishType');
+  if (!fishTypeSelect) return;
+
+  fishTypeSelect.innerHTML = '<option value="">Loading fish types...</option>';
+  fishTypeSelect.disabled = true;
+
+  if (!pondId) {
+    fishTypeSelect.innerHTML = '<option value="">Select a fish type</option>';
+    fishTypeSelect.disabled = true;
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/ponds/${pondId}/fish-types/`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error('Unable to load fish types');
+    }
+
+    if (!data.fish_types || data.fish_types.length === 0) {
+      fishTypeSelect.innerHTML = '<option value="">No fish types available</option>';
+      fishTypeSelect.disabled = true;
+      return;
+    }
+
+    fishTypeSelect.innerHTML = '<option value="">Select a fish type</option>';
+    data.fish_types.forEach((fishType) => {
+      const option = document.createElement('option');
+      option.value = fishType.id;
+      option.textContent = fishType.name;
+      fishTypeSelect.appendChild(option);
+    });
+    fishTypeSelect.disabled = false;
+  } catch (error) {
+    fishTypeSelect.innerHTML = '<option value="">Unable to load fish types</option>';
+    fishTypeSelect.disabled = true;
+  }
+}
+
+async function generatePrediction() {
+  const pondSelect = document.getElementById('selectedPond');
+  const fishTypeSelect = document.getElementById('selectedFishType');
+  const generateButton = document.getElementById('generatePredictionButton');
+  const applyButton = document.getElementById('applyPredictionButton');
+
+  if (!pondSelect || !fishTypeSelect) return;
+
+  const pondId = pondSelect.value;
+  const fishTypeId = fishTypeSelect.value;
+
+  if (!pondId || !fishTypeId) {
+    Toast.error('Please select both a pond and a fish type.');
+    renderPredictionResult({ success: false, message: 'Please select both a pond and a fish type.' });
+    return;
+  }
+
+  const buttonToUpdate = generateButton || applyButton;
+  if (buttonToUpdate) {
+    buttonToUpdate.disabled = true;
+    buttonToUpdate.innerHTML = '<span>Generating...</span>';
+  }
+
+  try {
+    const response = await fetch('{% url "predict_harvest_api" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({
+        pond_id: pondId,
+        fish_type_id: fishTypeId,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Prediction failed');
+    }
+
+    renderPredictionResult(data);
+    updatePredictionChart(pondSelect.value, fishTypeSelect.value, data);
+    if (data.success) {
+      Toast.success(data.message || 'Prediction generated successfully.');
+    } else {
+      Toast.error(data.message || 'Prediction unavailable.');
+    }
+  } catch (error) {
+    renderPredictionResult({ success: false, message: error.message || 'Prediction unavailable.' });
+    Toast.error(error.message || 'Prediction unavailable.');
+  } finally {
+    if (buttonToUpdate) {
+      buttonToUpdate.disabled = false;
+      buttonToUpdate.innerHTML = buttonToUpdate.id === 'generatePredictionButton'
+        ? '<svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 12L2.5 8.5"/></svg>Generate New Prediction'
+        : 'Apply';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  setPredictionCardDefaults();
+
+  const pondSelect = document.getElementById('selectedPond');
+  const fishTypeSelect = document.getElementById('selectedFishType');
+  const generateButton = document.getElementById('generatePredictionButton');
+  const applyButton = document.getElementById('applyPredictionButton');
+
+  if (pondSelect) {
+    pondSelect.addEventListener('change', function() {
+      loadFishTypesForPond(this.value);
+      updatePredictionChart(this.value, document.getElementById('selectedFishType').value, null);
+    });
+  }
+
+  if (generateButton) {
+    generateButton.addEventListener('click', generatePrediction);
+  }
+
+  if (applyButton) {
+    applyButton.addEventListener('click', generatePrediction);
+  }
+
+  if (fishTypeSelect) {
+    fishTypeSelect.addEventListener('change', function() {
+      if (!this.value) {
+        setPredictionCardDefaults();
+        updatePredictionChart(pondSelect.value, null, null);
+      }
+    });
+  }
+});
+</script>
+
+<style>
+/* ==========================================
+   HARVEST PREDICTIONS — REDESIGNED
+   ========================================== */
+
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem -6rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 0.9375rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin: 0.15rem 0 0;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.125rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #0f766e;
+  color: #ffffff;
+  border-color: #0f766e;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #115e59;
+  border-color: #115e59;
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-icon {
+  flex-shrink: 0;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 180px;
+}
+
+.form-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #111827;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em;
+  padding-right: 2.25rem;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.08);
+}
+
+.form-select:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.prediction-hero {
+  background: #ffffff;
+  border: 1px solid #0f766e;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.prediction-hero-header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f0fdfa;
+  background: #f0fdfa;
+}
+
+.prediction-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f766e;
+  color: #ffffff;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.prediction-hero-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.prediction-hero-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0.1rem 0 0;
+}
+
+.prediction-hero-body {
+  padding: 1.75rem 1.5rem;
+}
+
+.prediction-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metric-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.metric-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #0f766e;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.metric-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+}
+
+.metric-icon {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  line-height: 1;
+}
+
+.metric-caption {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.metric-caption-success {
+  color: #059669;
+}
+
+.metric-caption-danger {
+  color: #dc2626;
+}
+
+.metric-caption-warning {
+  color: #d97706;
+}
+
+.metric-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.metric-bar-fill {
+  height: 100%;
+  background: #0f766e;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.metric-bar-fill-success {
+  background: #059669;
+}
+
+.metric-bar-fill-danger {
+  background: #dc2626;
+}
+
+.metric-bar-fill-warning {
+  background: #d97706;
+}
+
+.chart-container {
+  position: relative;
+  height: 320px;
+  width: 100%;
+}
+
+.chart-message {
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.empty-state {
+  padding: 2rem;
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  background: #fafafa;
+  text-align: center;
+}
+
+.empty-state-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.35rem;
+}
+
+.empty-state-text {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1.5rem 1rem 2rem;
+    gap: 1.25rem;
+  }
+
+  .page-title {
+    font-size: 1.375rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .prediction-metrics {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .chart-container {
+    height: 240px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-group {
+    min-width: unset;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+</style>
+
+{% endblock %}

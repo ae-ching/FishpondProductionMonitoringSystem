@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-2xl font-bold">Toast Notification Test Page</h1>
+    
+    <div class="border p-4 rounded bg-white shadow-sm">
+        <h2 class="text-lg font-bold mb-4">Test Toast Notifications</h2>
+        
+        <div class="space-y-2">
+            <button onclick="Toast.success('This is a success message!')" class="px-4 py-2 bg-green-500 text-white rounded">
+                Test Success
+            </button>
+            <button onclick="Toast.error('This is an error message!')" class="px-4 py-2 bg-red-500 text-white rounded">
+                Test Error
+            </button>
+            <button onclick="Toast.warning('This is a warning message!')" class="px-4 py-2 bg-yellow-500 text-white rounded">
+                Test Warning
+            </button>
+            <button onclick="Toast.info('This is an info message!')" class="px-4 py-2 bg-blue-500 text-white rounded">
+                Test Info
+            </button>
+        </div>
+    </div>
+    
+    <div class="border p-4 rounded bg-white shadow-sm">
+        <h2 class="text-lg font-bold mb-4">Django Message (Should Appear as Toast):</h2>
+        {% if messages %}
+            <div class="text-green-600">
+                Django messages found and should display as toasts above!
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="text-gray-500">
+                No Django messages in this request.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    console.log('Toast Test Page Loaded');
+    console.log('Toast object:', typeof Toast);
+    
+    // Wait for toastManager to initialize
+    setTimeout(function() {
+        if (typeof toastManager !== 'undefined') {
+            console.log('ToastManager initialized');
+            console.log('Active Toasts:', toastManager.getCount());
+        } else {
+            console.log('ToastManager still not defined');
+        }
+    }, 500);
+</script>
+{% endblock %}

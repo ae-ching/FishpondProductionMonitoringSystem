@@ -1,0 +1,644 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="space-y-8 p-6">
+
+<!-- Header Section -->
+<div class="flex items-center justify-between">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
+        <p class="text-slate-500 mt-1">Control center for harvest performance, pond status, and predictions.</p>
+    </div>
+    <button class="px-5 py-2.5 border border-slate-200 rounded-xl flex items-center gap-2 bg-white text-slate-600 hover:bg-slate-50 transition-all shadow-sm" onclick="location.reload()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+        Refresh Overview
+    </button>
+</div>
+
+<!-- KPI Cards Section -->
+<div class="grid gap-5 md:grid-cols-4">
+    
+    <!-- Total Harvest Card -->
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow" style="position: relative; overflow: hidden;">
+        <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <p class="text-sm font-medium text-slate-500" style="margin: 0;">Total Harvest</p>
+            <div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-rose-400">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.5rem;">
+            <h3 class="text-2xl font-bold text-slate-800" style="margin: 0;">{{ total_harvest|floatformat:0|default:'0' }}</h3>
+            <span class="text-sm text-slate-400">kg</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            <span class="flex items-center text-sm text-emerald-500 font-medium">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-1">
+                    <polyline points="23 6 13.46 15.54 8 10 1 17"></polyline><polyline points="23 6 23 16 13 16"></polyline>
+                </svg>
+                +12.5%
+            </span>
+            <span class="text-sm text-slate-400">vs last month</span>
+        </div>
+    </div>
+
+    <!-- Total Fishponds Card -->
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow" style="position: relative; overflow: hidden;">
+        <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <p class="text-sm font-medium text-slate-500" style="margin: 0;">Total Fishponds</p>
+            <div class="w-9 h-9 rounded-xl bg-sky-50 flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-sky-400">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                </svg>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.5rem;">
+            <h3 class="text-2xl font-bold text-slate-800" style="margin: 0;">{{ total_ponds|default:'0' }}</h3>
+            <span class="text-sm text-slate-400">ponds</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            <span class="flex items-center text-sm text-emerald-500 font-medium">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-1">
+                    <polyline points="23 6 13.46 15.54 8 10 1 17"></polyline><polyline points="23 6 23 16 13 16"></polyline>
+                </svg>
+                +{{ active_ponds|default:'0' }}
+            </span>
+            <span class="text-sm text-slate-400">active ponds</span>
+        </div>
+    </div>
+
+    <!-- Most Recent Harvest Card -->
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow" style="position: relative; overflow: hidden;">
+        <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <p class="text-sm font-medium text-slate-500" style="margin: 0;">Most Recent Harvest</p>
+            <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-amber-400">
+                    <path d="M12 2l6 11h11l-9 7 3 11-11-8-11 8 3-11-9-7h11l6-11z"></path>
+                </svg>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.5rem;">
+            
+            {% if latest_harvest %}
+            <h3 class="text-2xl font-bold text-slate-800" style="margin: 0;">{{ latest_harvest.quantity|floatformat:0 }}</h3>
+            <span class="text-sm text-slate-400">kg</span>
+            {% else %}
+            <h3 class="text-2xl font-bold text-slate-800" style="margin: 0;">0</h3>
+            <span class="text-sm text-slate-400">kg</span>
+            {% endif %}
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            {% if latest_harvest %}
+            <span class="text-sm text-indigo-400 font-medium">{{ latest_harvest.pond.name|default:'No pond assigned' }}</span>
+            <span class="text-sm text-slate-400">{{ latest_harvest.date|default:'No date' }}</span>
+            {% else %}
+            <span class="text-sm text-slate-400">No harvest yet</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Predicted Harvest Card -->
+    <div class="border border-slate-200 p-5 rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow" style="position: relative; overflow: hidden;">
+        <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+            <p class="text-sm font-medium text-slate-500" style="margin: 0;">Predicted Harvest</p>
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-emerald-400">
+                    <polyline points="23 6 13.46 15.54 8 10 1 17"></polyline><polyline points="23 6 23 16 13 16"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 0.25rem; margin-bottom: 0.5rem;">
+            <h3 class="text-2xl font-bold text-slate-800" style="margin: 0;">{{ total_harvest|add:total_harvest|floatformat:0|default:'0' }}</h3>
+            <span class="text-sm text-slate-400">kg</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+            <span class="flex items-center text-sm text-emerald-500 font-medium">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-1">
+                    <polyline points="23 6 13.46 15.54 8 10 1 17"></polyline><polyline points="23 6 23 16 13 16"></polyline>
+                </svg>
+                +22%
+            </span>
+            <span class="text-sm text-slate-400">estimated</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- Charts Section -->
+<div class="grid gap-6 lg:grid-cols-2">
+    
+    <!-- Harvest Over Time Chart -->
+    <div class="border border-slate-200 p-6 rounded-2xl bg-white shadow-sm" style="display: flex; flex-direction: column;">
+        <div class="mb-5">
+            <h3 class="font-semibold text-slate-800 mb-1">Harvest Over Time</h3>
+            <p class="text-slate-400 text-sm">Monthly harvest data compared to targets</p>
+        </div>
+        <div style="flex: 1; min-height: 350px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="harvestChart" style="max-height: 100%;"></canvas>
+        </div>
+    </div>
+
+    <!-- Fish Type Distribution Chart -->
+    <div class="border border-slate-200 p-6 rounded-2xl bg-white shadow-sm" style="display: flex; flex-direction: column;">
+        <div class="mb-5">
+            <h3 class="font-semibold text-slate-800 mb-1">Fish Type Distribution</h3>
+            <p class="text-slate-400 text-sm">Harvest breakdown by fish species</p>
+        </div>
+        <div style="flex: 1; min-height: 350px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="fishTypeChart" style="max-height: 100%;"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- Recent Activity Section -->
+<div class="space-y-4">
+    <div>
+        <h2 class="text-3xl font-bold text-slate-800 tracking-tight">Recent Harvest Activity</h2>
+        <p class="text-slate-500 mt-1">Latest harvest entries from all fishponds</p>
+    </div>
+</div>
+
+<div class="border border-slate-200 rounded-2xl bg-white shadow-sm overflow-hidden" style="max-height: 300px; overflow: auto;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 1px solid #e2e8f0;">
+                <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Harvest ID</th>
+                <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Pond</th>
+                <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Fish Type</th>
+                <th class="text-right text-sm font-medium text-slate-500" style="padding: 1rem;">Quantity (kg)</th>
+                <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Date</th>
+                <th class="text-left text-sm font-medium text-slate-500" style="padding: 1rem;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for harvest in latest_harvests %}
+            <tr style="border-bottom: 1px solid #f1f5f9; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'">
+                <td class="text-slate-800 font-medium" style="padding: 1rem;">H{{ harvest.id }}</td>
+                <td class="text-slate-600" style="padding: 1rem;">{{ harvest.pond.name }}</td>
+                <td class="text-slate-600" style="padding: 1rem;">{{ harvest.fish_type }}</td>
+                <td class="text-slate-800 font-medium text-right" style="padding: 1rem;">{{ harvest.quantity|floatformat:0 }}</td>
+                <td class="text-slate-600" style="padding: 1rem;">{{ harvest.date }}</td>
+                <td style="padding: 1rem;"><span class="inline-block px-3 py-1 rounded-lg bg-emerald-50 text-emerald-500 text-xs font-medium">completed</span></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-slate-400 text-center" style="padding: 1rem;">No harvest records yet</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Pastel color palette for different fish types (matching analytics module)
+    const fishTypeColors = {
+        'Tilapia': '#1d4ed8',      // Strong Blue
+        'Catfish': '#be185d',       // Dark Magenta
+        'Milkfish': '#7c3aed',      // Dark Purple
+        'Carp': '#0f766e',          // Dark Teal
+        'Bangus': '#d97706',        // Dark Orange
+        'Snakehead': '#9333ea',     // Rich Violet
+    };
+    
+    const fishTypeBackgrounds = {
+        'Tilapia': 'rgba(29, 78, 216, 0.18)',
+        'Catfish': 'rgba(190, 24, 93, 0.18)',
+        'Milkfish': 'rgba(124, 58, 237, 0.18)',
+        'Carp': 'rgba(15, 118, 110, 0.18)',
+        'Bangus': 'rgba(217, 119, 6, 0.18)',
+        'Snakehead': 'rgba(147, 51, 234, 0.18)',
+    };
+    
+    // Harvest Over Time Chart with Fish Type Differentiation
+    const harvestCtx = document.getElementById('harvestChart').getContext('2d');
+    const fishTypes = JSON.parse('{{ fish_types_json|escapejs }}');
+    const harvestByFishType = JSON.parse('{{ harvest_by_fish_type_json|escapejs }}');
+    
+    const harvestDatasets = fishTypes.map((fishType, index) => ({
+        label: fishType,
+        data: harvestByFishType[fishType],
+        borderColor: fishTypeColors[fishType] || `hsl(${index * 60}, 70%, 75%)`,
+        backgroundColor: fishTypeBackgrounds[fishType] || `hsl(${index * 60}, 70%, 90%)`,
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: fishTypeColors[fishType] || `hsl(${index * 60}, 70%, 75%)`,
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+    }));
+    
+    new Chart(harvestCtx, {
+        type: 'line',
+        data: {
+            labels: {{ months|safe }},
+            datasets: harvestDatasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: '#334155',
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12,
+                            family: "'Inter', sans-serif"
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    titleColor: '#e2e8f0',
+                    bodyColor: '#e2e8f0',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    cornerRadius: 12,
+                    padding: 12,
+                    displayColors: false,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' kg';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#475569',
+                        font: {
+                            size: 12,
+                            family: "'Inter', sans-serif"
+                        },
+                        callback: function(value) {
+                            return (value / 1000).toFixed(1) + 'k';
+                        }
+                    },
+                    grid: {
+                        color: '#e2e8f0',
+                        drawBorder: false,
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#475569',
+                        font: {
+                            size: 12,
+                            family: "'Inter', sans-serif"
+                        }
+                    },
+                    grid: {
+                        display: false,
+                        drawBorder: false,
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    hoverBorderWidth: 3
+                },
+                line: {
+                    borderWidth: 3
+                }
+            }
+        }
+    });
+
+    // Fish Type Distribution Pie Chart with Pastel Colors
+    const fishTypeCtx = document.getElementById('fishTypeChart').getContext('2d');
+    const species = JSON.parse('{{ species_json|escapejs }}');
+    const speciesQuantities = JSON.parse('{{ species_quantities_json|escapejs }}');
+    
+    const speciesColors = species.map(fish => {
+        const color = fishTypeColors[fish];
+        return color ? color : `hsl(${Math.random() * 360}, 60%, 75%)`;
+    });
+    
+    const speciesBackgrounds = species.map(fish => fishTypeBackgrounds[fish] || `hsl(${Math.random() * 360}, 60%, 90%)`);
+    
+    new Chart(fishTypeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: species,
+            datasets: [{
+                data: speciesQuantities,
+                backgroundColor: speciesColors,
+                borderColor: '#ffffff',
+                borderWidth: 3,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'right',
+                    labels: {
+                        color: '#64748b',
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12,
+                            family: "'Inter', sans-serif"
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    titleColor: '#1e293b',
+                    bodyColor: '#1e293b',
+                    borderColor: '#e2e8f0',
+                    borderWidth: 1,
+                    cornerRadius: 12,
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(0);
+                            return context.label + ': ' + context.parsed.toLocaleString() + ' kg (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+}
+
+.space-y-8 > * + * {
+  margin-top: 2rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.text-slate-800 {
+  color: #1e293b;
+}
+
+.text-slate-500 {
+  color: #64748b;
+}
+
+.text-slate-400 {
+  color: #94a3b8;
+}
+
+.text-slate-600 {
+  color: #475569;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.border {
+  border: 1px solid #e2e8f0;
+}
+
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+}
+
+.hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.transition-shadow {
+  transition: box-shadow 0.2s ease;
+}
+
+.transition-all {
+  transition: all 0.2s ease;
+}
+
+.hover\:bg-slate-50:hover {
+  background-color: #f8fafc;
+}
+
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.py-2\.5 {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.p-5 {
+  padding: 1.25rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.grid {
+  display: grid;
+}
+
+.gap-5 {
+  gap: 1.25rem;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.md\:grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.lg\:grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.w-9 {
+  width: 2.25rem;
+}
+
+.h-9 {
+  height: 2.25rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.bg-rose-50 {
+  background-color: #fff1f2;
+}
+
+.text-rose-400 {
+  color: #fb7185;
+}
+
+.bg-sky-50 {
+  background-color: #f0f9ff;
+}
+
+.text-sky-400 {
+  color: #38bdf8;
+}
+
+.bg-amber-50 {
+  background-color: #fffbeb;
+}
+
+.text-amber-400 {
+  color: #fbbf24;
+}
+
+.bg-emerald-50 {
+  background-color: #ecfdf5;
+}
+
+.text-emerald-400 {
+  color: #34d399;
+}
+
+.text-emerald-500 {
+  color: #10b981;
+}
+
+.text-indigo-400 {
+  color: #818cf8;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+</style>
+
+{% endblock %}

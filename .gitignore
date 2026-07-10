@@ -1,0 +1,25 @@
+# Virtual environment
+myworld/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# SQLite database
+db.sqlite3
+
+# Environment variables
+.env
+
+# Collected static files
+staticfiles/
+
+# Media uploads
+media/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log

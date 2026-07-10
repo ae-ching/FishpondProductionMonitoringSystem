@@ -1,0 +1,1 @@
+from arich_app.views import dashboard

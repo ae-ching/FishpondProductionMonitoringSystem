@@ -1,0 +1,1013 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaFarm - Fishpond Management System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            border-color: var(--border);
+            outline-color: var(--ring);
+        }
+
+        :root {
+            --background: oklch(0.98 0.005 200);
+            --foreground: oklch(0.2 0.02 220);
+            --card: oklch(1 0 0);
+            --card-foreground: oklch(0.2 0.02 220);
+            --popover: oklch(1 0 0);
+            --popover-foreground: oklch(0.2 0.02 220);
+            --primary: oklch(0.55 0.15 220);
+            --primary-foreground: oklch(0.98 0 0);
+            --secondary: oklch(0.95 0.02 180);
+            --secondary-foreground: oklch(0.25 0.05 220);
+            --muted: oklch(0.95 0.01 200);
+            --muted-foreground: oklch(0.45 0.02 220);
+            --accent: oklch(0.65 0.12 160);
+            --accent-foreground: oklch(0.98 0 0);
+            --destructive: oklch(0.55 0.22 25);
+            --destructive-foreground: oklch(0.98 0 0);
+            --border: oklch(0.9 0.02 200);
+            --input: oklch(0.92 0.01 200);
+            --ring: oklch(0.55 0.15 220);
+            --chart-1: oklch(0.55 0.15 220);
+            --chart-2: oklch(0.65 0.12 160);
+            --chart-3: oklch(0.6 0.1 280);
+            --chart-4: oklch(0.7 0.15 140);
+            --chart-5: oklch(0.55 0.18 200);
+            --radius: 0.625rem;
+            --sidebar: oklch(0.145 0 0);
+            --sidebar-foreground: oklch(0.95 0.01 200);
+            --sidebar-primary: oklch(0.55 0.15 220);
+            --sidebar-primary-foreground: oklch(0.98 0 0);
+            --sidebar-accent: oklch(0.35 0.06 220);
+            --sidebar-accent-foreground: oklch(0.95 0.01 200);
+            --sidebar-border: oklch(0.35 0.04 220);
+            --sidebar-ring: oklch(0.55 0.15 220);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark {
+            --background: oklch(0.145 0 0);
+            --foreground: oklch(0.985 0 0);
+            --card: oklch(0.145 0 0);
+            --card-foreground: oklch(0.985 0 0);
+            --popover: oklch(0.145 0 0);
+            --popover-foreground: oklch(0.985 0 0);
+            --primary: oklch(0.55 0.15 220);
+            --primary-foreground: oklch(0.98 0 0);
+            --primary-hover: oklch(0.62 0.18 220);
+            --secondary: oklch(0.269 0 0);
+            --secondary-foreground: oklch(0.985 0 0);
+            --muted: oklch(0.269 0 0);
+            --muted-foreground: oklch(0.708 0 0);
+            --accent: oklch(0.269 0 0);
+            --accent-foreground: oklch(0.985 0 0);
+            --destructive: oklch(0.396 0.141 25.723);
+            --destructive-foreground: oklch(0.637 0.237 25.331);
+            --border: oklch(0.269 0 0);
+            --input: oklch(0.269 0 0);
+            --ring: oklch(0.439 0 0);
+            --chart-1: oklch(0.488 0.243 264.376);
+            --chart-2: oklch(0.696 0.17 162.48);
+            --chart-3: oklch(0.769 0.188 70.08);
+            --chart-4: oklch(0.627 0.265 303.9);
+            --chart-5: oklch(0.645 0.246 16.439);
+            --sidebar: oklch(0.205 0 0);
+            --sidebar-foreground: oklch(0.985 0 0);
+            --sidebar-primary: oklch(0.488 0.243 264.376);
+            --sidebar-primary-foreground: oklch(0.985 0 0);
+            --sidebar-accent: oklch(0.269 0 0);
+            --sidebar-accent-foreground: oklch(0.985 0 0);
+            --sidebar-border: oklch(0.269 0 0);
+            --sidebar-ring: oklch(0.439 0 0);
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--foreground);
+            display: flex;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        button { border: none; background: none; cursor: pointer; font-family: inherit; }
+
+        /* ── SIDEBAR ─────────────────────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 260px;
+            background: var(--sidebar);
+            color: var(--sidebar-foreground);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed { width: 72px; }
+
+        /* Brand */
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 1.25rem 1.25rem 1rem;
+            height: 68px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .sidebar-logo { display: flex; align-items: center; gap: 0.875rem; flex: 1; min-width: 0; }
+
+        .sidebar-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.35);
+        }
+
+        .sidebar-icon svg { width: 20px; height: 20px; }
+
+        .sidebar-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--sidebar-foreground);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            opacity: 1;
+            transition: opacity 0.2s, transform 0.3s;
+        }
+
+        .sidebar.collapsed .sidebar-text { opacity: 0; transform: translateX(-8px); pointer-events: none; }
+
+        /* Navigation */
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.625rem 0.875rem;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            transition: var(--transition);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+            box-shadow: inset 0 0 0 1px rgba(96,165,250,0.12);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: #60a5fa;
+            border-radius: 0 3px 3px 0;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .nav-item:hover .nav-icon { transform: scale(1.08); }
+
+        .nav-icon svg { width: 18px; height: 18px; }
+
+        .nav-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: opacity 0.2s, transform 0.25s;
+        }
+
+        .sidebar.collapsed .nav-text { opacity: 0; transform: translateX(-6px); pointer-events: none; }
+
+        /* Tooltip for collapsed sidebar */
+        .nav-item[data-label]::after {
+            content: attr(data-label);
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%) scale(0.9);
+            background: #1e293b;
+            color: #fff;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 60;
+        }
+
+        .sidebar.collapsed .nav-item[data-label]:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+
+        /* Footer */
+        .sidebar-footer {
+            padding: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .collapse-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.625rem;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .collapse-btn:hover {
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.8);
+        }
+
+        .collapse-btn svg { width: 16px; height: 16px; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .sidebar.collapsed .collapse-btn svg { transform: rotate(180deg); }
+
+        .collapse-label { white-space: nowrap; transition: opacity 0.2s; }
+
+        .sidebar.collapsed .collapse-label { opacity: 0; width: 0; overflow: hidden; }
+
+        /* ── MAIN LAYOUT ───────────────────────────────────────── */
+        .main-wrapper {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed ~ .main-wrapper {
+            margin-left: 72px;
+            width: calc(100% - 72px);
+        }
+
+        /* ── TOP HEADER ────────────────────────────────────────── */
+        .top-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 68px;
+            padding: 0 1.5rem;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(16px) saturate(1.8);
+            -webkit-backdrop-filter: blur(16px) saturate(1.8);
+            border-bottom: 1px solid var(--border);
+            gap: 1.5rem;
+        }
+
+        .dark .top-navbar {
+            background: rgba(15, 23, 42, 0.72);
+        }
+
+        /* Header Right */
+        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-foreground);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--background);
+            color: var(--foreground);
+        }
+
+        .icon-btn svg { width: 18px; height: 18px; }
+
+        .theme-toggle {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--foreground);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--ring);
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 7px;
+            height: 7px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid var(--card);
+            box-shadow: 0 0 0 1px rgba(239,68,68,0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+        /* ── USER DROPDOWN ─────────────────────────────────────── */
+        .user-menu-wrap { position: relative; }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.375rem 0.5rem 0.375rem 0.375rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            background: none;
+        }
+
+        .user-menu:hover {
+            background: var(--background);
+            border-color: var(--border);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .user-role {
+            font-size: 0.6875rem;
+            color: var(--muted-foreground);
+        }
+
+        .chevron {
+            width: 14px;
+            height: 14px;
+            color: var(--muted-foreground);
+            transition: transform 0.2s;
+            margin-left: 2px;
+        }
+
+        .user-menu-wrap.open .chevron { transform: rotate(180deg); }
+
+        /* Dropdown */
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--popover);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            flex-direction: column;
+            min-width: 220px;
+            z-index: 50;
+            padding: 0.375rem;
+            opacity: 0;
+            transform: translateY(-6px) scale(0.97);
+            transition: opacity 0.2s, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dropdown-menu.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .dropdown-header {
+            padding: 0.625rem 0.75rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted-foreground);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.25rem 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.625rem;
+            color: var(--popover-foreground);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            text-align: left;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--background);
+        }
+
+        .dropdown-item svg { width: 16px; height: 16px; color: var(--muted-foreground); flex-shrink: 0; }
+
+        .dropdown-item.logout {
+            color: #dc2626;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #fef2f2;
+        }
+
+        .dropdown-item.logout svg { color: #ef4444; }
+
+        /* ── MAIN CONTENT ──────────────────────────────────────── */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: var(--background);
+        }
+
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Cards and Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: var(--ring);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Section Head */
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+        }
+
+        .subtitle {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            background: var(--card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        th {
+            background: var(--muted);
+            color: var(--foreground);
+            font-weight: 600;
+        }
+
+        tr:hover td {
+            background: var(--accent);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-slate {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* Buttons */
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.125rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .button-secondary {
+            background: #10b981;
+            color: white;
+        }
+
+        .button-secondary:hover {
+            background: #059669;
+        }
+
+        .button-white {
+            background: white;
+            color: var(--foreground);
+            border: 1px solid var(--border);
+        }
+
+        .button-white:hover {
+            background: var(--background);
+        }
+
+        .dark .bg-white {
+            background-color: var(--card) !important;
+            color: var(--foreground) !important;
+        }
+
+        .dark .border {
+            border-color: var(--border) !important;
+        }
+
+        .dark .border-gray-300 {
+            border-color: var(--border) !important;
+        }
+
+        .dark .shadow-sm {
+            box-shadow: 0 1px 2px rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .dark .text-gray-500 {
+            color: var(--muted-foreground) !important;
+        }
+
+        .dark .hover\:bg-gray-50:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .dark .button-white {
+            background: var(--card) !important;
+            color: var(--foreground) !important;
+            border-color: var(--border) !important;
+        }
+
+        .dark .chart-card {
+            background: var(--card) !important;
+            border-color: var(--border) !important;
+            color: var(--foreground) !important;
+        }
+
+        .dark input,
+        .dark select,
+        .dark textarea {
+            background: var(--card) !important;
+            color: var(--foreground) !important;
+            border-color: var(--border) !important;
+        }
+
+        .dark input:focus,
+        .dark select:focus,
+        .dark textarea:focus {
+            background: var(--card) !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+            color: var(--foreground) !important;
+        }
+
+        /* Forms */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            font-weight: 500;
+            color: var(--foreground);
+            font-size: 0.875rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--background);
+            color: var(--foreground);
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Chart Card */
+        .chart-card {
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            min-height: 220px;
+            display: grid;
+            place-items: center;
+            color: var(--foreground);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
+        .chart-label {
+            color: var(--muted-foreground);
+            font-size: 0.75rem;
+            margin-top: 10px;
+            text-transform: none;
+        }
+
+        /* Filter Row */
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Footer removed */
+
+        /* Global sticky table header styles */
+        table thead tr {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #f9fafb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; }
+            .sidebar .sidebar-text, .sidebar .nav-text, .sidebar .collapse-label { display: none; }
+            .main-wrapper { margin-left: 72px; width: calc(100% - 72px); }
+            .top-navbar { padding: 0 1rem; }
+            .user-info { display: none; }
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/toast.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo">
+                <div class="sidebar-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <div class="sidebar-text">AquaFarm</div>
+            </a>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}" data-label="Dashboard">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="/ponds/" class="nav-item {% if 'ponds' in request.path %}active{% endif %}" data-label="Fishponds">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+                <span class="nav-text">Fishponds</span>
+            </a>
+            <a href="/harvest/" class="nav-item {% if 'harvest' in request.path %}active{% endif %}" data-label="Harvest">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+                <span class="nav-text">Harvest</span>
+            </a>
+            <a href="/analytics/" class="nav-item {% if 'analytics' in request.path %}active{% endif %}" data-label="Analytics">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg></span>
+                <span class="nav-text">Analytics</span>
+            </a>
+            <a href="/prediction/" class="nav-item {% if 'prediction' in request.path %}active{% endif %}" data-label="Predictions">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 12l7-7"/></svg></span>
+                <span class="nav-text">Predictions</span>
+            </a>
+        </nav>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <a href="/settings/" class="nav-item {% if 'settings' in request.path %}active{% endif %}" data-label="Settings" style="margin-bottom: 0.25rem;">
+                <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.67 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.67a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+                <span class="nav-text">Settings</span>
+            </a>
+            <button class="collapse-btn" onclick="toggleSidebar()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+                <span class="collapse-label">Collapse</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navigation -->
+        <header class="top-navbar">
+            <!-- Right Section -->
+            <div class="top-nav-right">
+                <!-- Theme Toggle -->
+                <button class="icon-btn theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme">
+                    <span id="themeIcon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    </span>
+                </button>
+
+
+                <!-- User Menu -->
+                <div class="user-menu-wrap" id="userWrap">
+                    <button class="user-menu" onclick="toggleUserMenu(event)">
+                        <div class="user-avatar">{{ user.first_name|first|upper|default:'A' }}</div>
+                        <div class="user-info">
+                            <div class="user-name">{{ user.username|default:'Admin' }}</div>
+                            <div class="user-role">Farm Manager</div>
+                        </div>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div class="dropdown-menu" id="userMenu">
+                        <div class="dropdown-header">My Account</div>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Profile
+                        </button>
+                        <button class="dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.67 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.67a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            Settings
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logout' %}" class="dropdown-item logout">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Django Messages Container for Toast System -->
+        <div id="django-messages" style="display: none;">
+            {% if messages %}
+                {% for message in messages %}
+                    <div data-message="{{ message }}" data-tags="{{ message.tags }}" data-title=""></div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <!-- Footer removed -->
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('collapseIcon');
+            sidebar.classList.toggle('collapsed');
+        }
+
+        function toggleUserMenu(e) {
+            e.stopPropagation();
+            const wrap = document.getElementById('userWrap');
+            const menu = document.getElementById('userMenu');
+            wrap.classList.toggle('open');
+            menu.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const wrap = document.getElementById('userWrap');
+            const button = event.target.closest('.user-menu');
+            if (!button && !event.target.closest('.dropdown-menu')) {
+                userMenu.classList.remove('active');
+                wrap.classList.remove('open');
+            }
+        });
+
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                themeIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                themeIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('themeIcon');
+
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+            }
+        });
+    </script>
+    <script src="{% static 'js/toast.js' %}"></script>
+</body>
+</html>

@@ -1,10 +1,11 @@
 {
   "buildCommand": "python manage.py collectstatic --noinput && python manage.py migrate --noinput --verbosity 2",
-  "functions": {
-    "arich_project/wsgi.py": {
-      "runtime": "python3.12"
+  "builds": [
+    {
+      "src": "arich_project/wsgi.py",
+      "use": "@vercel/python"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(.*)",

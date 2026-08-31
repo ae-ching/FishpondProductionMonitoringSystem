@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
 
-VERCEL_ENV = os.environ.get('VERCEL') == '1' or os.environ.get('VERCEL_ENV') in {'production', 'preview', 'development'}
+VERCEL_ENV = os.environ.get('VERCEL') == '1' or os.environ.get('VERCEL_ENV', '').lower() in {'production', 'preview', 'development'}
 
 ALLOWED_HOSTS = [
     'localhost',

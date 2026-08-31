@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "arich_project/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "arich_project/wsgi.py"
+    }
+  ]
+}

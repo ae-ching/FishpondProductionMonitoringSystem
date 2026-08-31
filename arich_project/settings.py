@@ -20,8 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5p*(ocys3sg4%r!_d+n$7!8z#z&n^ep+j3d@uyf&0lfsd1r2p1'
+import os
 
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-development-key'
+)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -29,10 +33,12 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.onrender.com',
+    'fishpond-production-monitoring-syst.vercel.app'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
+    'https://fishpond-production-monitoring-syst.vercel.app'
 ]
 
 

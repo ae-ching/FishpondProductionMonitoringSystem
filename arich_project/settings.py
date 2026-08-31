@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +30,8 @@ SECRET_KEY = os.environ.get(
 )
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
+
+VERCEL_ENV = os.environ.get('VERCEL') == '1' or os.environ.get('VERCEL_ENV') in {'production', 'preview', 'development'}
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -96,6 +99,11 @@ WSGI_APPLICATION = 'arich_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if VERCEL_ENV and not DATABASE_URL:
+    raise ImproperlyConfigured(
+        'Vercel deployment requires DATABASE_URL. Add it in Vercel Project Settings -> Environment Variables.'
+    )
 
 if DATABASE_URL:
     DATABASES = {
